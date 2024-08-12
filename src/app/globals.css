@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.shopping-cart-icons{
+  font-size: 44px !important;
+    color: #484ac3 !important;
+}
+
