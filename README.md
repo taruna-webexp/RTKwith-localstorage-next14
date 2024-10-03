@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# RTK witth basic structure
 
-## Getting Started
+Redux Toolkit with Local Storage This is a shopping cart system built with Next.js, Redux Toolkit, Tailwind CSS, and local storage. It allows you to display products, add them to the cart, and manage the cart's contents using local storage.
 
-First, run the development server:
+## Features
+
+- Display a list of products Add products to the cart
+- Update product quantities in the cart
+- Remove products from the cart Persist cart
+- data using local storage Custom hook for managing local storage Responsive design with Tailwind CSS
+- Error and loading states for API calls.
+
+### Technologies Used
+
+- Next.js 14 - Framework for building the user interface.
+- Redux Toolkit - For managing global state and handling asynchronous actions.
+- Material-UI - For building responsive and styled UI components.
+- Tailwind CSS - Utility-first CSS framework for custom styling.
+
+## Prerequisites
+
+Before you begin, ensure you have met the following requirements:
+
+- You have installed **Node.js** (version 18.17.0) and **npm/yarn**.
+- You are familiar with **React** and **Next.js** framework basics.
+- You have **Bootstrap** and **Tailwind CSS** knowledge (optional but helpful).
+
+## Installation
+
+To install the dependencies, run:
+
+### Using npm:
 
 ```bash
+npm install
+or if you are using yarn:
+
+yarn install
+Start the development server:
+
 npm run dev
-# or
+or if you are using yarn:
+
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Usage:
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+- Viewing the User List
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+* The UsersPage component fetches users using Redux Toolkit and displays them in a Material-UI Table.
 
-## Learn More
+- Counter Functionality
 
-To learn more about Next.js, take a look at the following resources:
+* A simple counter is included, allowing you to increment or decrement a value using buttons.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- API Integration
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+* The application is set up to fetch data from an API. You can customize the API endpoints and actions in the userSlice.js file in the Redux slice folder.
 
-## Deploy on Vercel
+Usage After starting the development server, open your browser and navigate to http://localhost:3000 to view the application.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Fork the repository Create a new branch (git checkout -b feature-branch) Make your changes Commit your changes (git commit -m 'Add some feature') Push to the branch (git push origin feature-branch) Open a pull request Logo
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+🛠 Skills Nextjs, Redux,Tailwind...
+
+Logo
+
+🛠 Skills
+Javascript, HTML, CSS...
