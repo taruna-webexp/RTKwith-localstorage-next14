@@ -1,15 +1,9 @@
+"use client";
+import { configureStore } from "@reduxjs/toolkit";
+import cartReducer from "../redux/cart";
 
-
- 
-
-
-import { configureStore } from '@reduxjs/toolkit';
-import productReducer from './productSlice'; // Adjust the path to your slice
-
-const store = configureStore({
+export const store = configureStore({
   reducer: {
-    products: productReducer, // Assuming 'product' slice
+    cart: cartReducer,
   },
 });
-
-export default store;

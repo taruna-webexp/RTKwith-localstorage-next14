@@ -1,20 +1,28 @@
-"use client"
-import { Provider } from "react-redux";
+"use client";
 import "./globals.css";
-import store from "@/store/store";
-import Navbar from "./components/Navbar";
+import { ToastContainer } from "react-toastify";
+import ResponsiveAppBar from "../component/Navbar/Navbar";
+import NextProviders from "../component/Provider";
+import { Provider } from "react-redux";
+import { store } from "@/store/store";
 
-
+import { Toaster } from "react-hot-toast";
+import Footer from "@/component/footer/Footer";
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body >
-        <Provider store={store}>
-          <Navbar />
-        {children}
-        </Provider>
-        </body>
+      <body>
+        <NextProviders>
+          <Provider store={store}>
+            <ResponsiveAppBar />
+            <Toaster position="top-right" />
+            {children}
+            <Footer />
+          </Provider>
+        </NextProviders>
+        <ToastContainer />
+      </body>
     </html>
   );
 }
