@@ -14,7 +14,7 @@ Redux Toolkit with Local Storage This is a shopping cart system built with Next.
 
 - Next.js 14 - Framework for building the user interface.
 - Redux Toolkit - For managing global state and handling asynchronous actions.
-- Material-UI - For building responsive and styled UI components.
+- Material-UI - For building styled UI components.
 - Tailwind CSS - Utility-first CSS framework for custom styling.
 
 ## Prerequisites
@@ -45,14 +45,6 @@ yarn dev
 ```
 
 ## Usage:
-
-- Viewing the User List
-
-* The UsersPage component fetches users using Redux Toolkit and displays them in a Material-UI Table.
-
-- Counter Functionality
-
-* A simple counter is included, allowing you to increment or decrement a value using buttons.
 
 - API Integration
 

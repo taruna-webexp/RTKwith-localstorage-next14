@@ -3,7 +3,7 @@ import { Button } from "@mui/joy";
 import axios from "axios";
 import Head from "next/head";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -11,7 +11,7 @@ import "swiper/css/pagination";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import { fetchProducts } from "@/redux/cart";
 import { useDispatch, useSelector } from "react-redux";
-
+import SentimentDissatisfiedIcon from "@mui/icons-material/SentimentDissatisfied";
 // Function to chunk the products array into chunks of 5
 const chunkArray = (arr, size) => {
   const chunks = [];
@@ -37,20 +37,7 @@ export default function App() {
 
   // Chunk the products into groups of 5
   const productChunks = chunkArray(products, 5);
-  // const Category products= products.
-  const menCategory = products.filter(
-    (item) => item.category === "men's clothing"
-  );
-  const womenCategory = products.filter(
-    (item) => item.category === "women's clothing"
-  );
-  const jawelleryCategory = products.filter(
-    (item) => item.category === "jewelery"
-  );
-  const electronicsCategory = products.filter(
-    (item) => item.category === "electronics"
-  );
-  console.log("menCategory", menCategory);
+  console.log("   {productChunk.length > 0 ? (", productChunks);
   return (
     <>
       <Head>
@@ -84,47 +71,54 @@ export default function App() {
             <img src="/assets/5.webp" alt="Banner 4" width="100%" />
           </SwiperSlide>
         </Swiper>
-
-        <h1 className="text-4xl font-bold mb-6">Welcome to Our Shop</h1>
-
-        {/* Loop through each chunk (carousel) */}
-        {productChunks.slice(0, 4).map((productChunk, index) => (
-          <div key={index} className="w-full mb-8">
-            <h2 className="text-2xl font-semibold mb-4">Winter sale</h2>
-            {/* Swiper Carousel */}
-            <Swiper
-              modules={[Navigation, Pagination]}
-              navigation
-              pagination={{ clickable: true }}
-              spaceBetween={30}
-              slidesPerView={3}
-              className="w-full"
-            >
-              {productChunk.map((product) => (
-                <SwiperSlide key={product.id}>
-                  <div className="border rounded-lg overflow-hidden shadow-lg transition-transform transform hover:scale-105">
-                    <img
-                      src={product.image}
-                      alt={product.title}
-                      className="w-full h-64 object-cover"
-                    />
-                    <div className="p-4">
-                      <h2 className="text-xl font-semibold">{product.title}</h2>
-                      <p className="text-lg font-bold">
-                        ${product.price.toFixed(2)}
-                      </p>
-                      <Link href={`/product/${product.id}`}>
-                        <Button className="mt-2 inline-block bg-blue-500 text-white hover:bg-blue-600">
-                          View Details
-                        </Button>
-                      </Link>
-                    </div>
-                  </div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          </div>
-        ))}
+        {productChunks.length > 0 ? (
+          <>
+            <h1 className="text-4xl font-bold mb-6">Welcome to Our Shop</h1>
+            {productChunks.slice(0, 4).map((productChunk, index) => (
+              <div key={index} className="w-full mb-8">
+                <h2 className="text-2xl font-semibold mb-4">Winter sale</h2>
+                {/* Swiper Carousel */}
+                <Swiper
+                  modules={[Navigation, Pagination]}
+                  navigation
+                  pagination={{ clickable: true }}
+                  spaceBetween={30}
+                  slidesPerView={3}
+                  className="w-full"
+                >
+                  {productChunk.map((product) => (
+                    <SwiperSlide key={product.id}>
+                      <div className="border rounded-lg overflow-hidden shadow-lg transition-transform transform hover:scale-105">
+                        <img
+                          src={product.image}
+                          alt={product.title}
+                          className="w-full h-64 object-cover"
+                        />
+                        <div className="p-4">
+                          <h2 className="text-xl font-semibold">
+                            {product.title}
+                          </h2>
+                          <p className="text-lg font-bold">
+                            ${product.price.toFixed(2)}
+                          </p>
+                          <Link href={`/product/${product.id}`}>
+                            <Button className="mt-2 inline-block bg-blue-500 text-white hover:bg-blue-600">
+                              View Details
+                            </Button>
+                          </Link>
+                        </div>
+                      </div>
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
+              </div>
+            ))}{" "}
+          </>
+        ) : (
+          <h2 className="text-4xl font-bold mb-6 text-red-600">
+            No Products Found <SentimentDissatisfiedIcon fontSize="large" />
+          </h2>
+        )}
 
         {/* Feature Section */}
         <div className="w-full mb-8">

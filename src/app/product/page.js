@@ -41,6 +41,11 @@ const Home = () => {
             </div>
             <h2 className="text-lg font-semibold mb-2">{product.title}</h2>
             <p className="text-gray-600 mb-4">${product.price}</p>
+            <Link href={`/product/${product.id}`}>
+              <button className="bg-blue-500 hover:bg-blue-600 text-white mb-2 font-semibold py-2 px-4 w-full rounded-md transition-colors duration-300">
+                View Details
+              </button>
+            </Link>
             <button
               onClick={() => addItemToCart(product)}
               className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 w-full rounded-md transition-colors duration-300"

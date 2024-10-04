@@ -20,6 +20,7 @@ import { fetchProducts, setCartItems, setSearchItems } from "@/redux/cart";
 import { useDispatch, useSelector } from "react-redux";
 import React, { useState } from "react";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import SearchFilter from "../common/search/SearchFilter";
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
     right: -3,
@@ -35,11 +36,7 @@ function ResponsiveAppBar() {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const { data: session } = useSession();
   const category = useSelector((state) => state.cart.category);
-  const loading = useSelector((state) => state.cart.loading);
-  const error = useSelector((state) => state.cart.error);
-  const allData = useSelector((state) => state.cart.products);
-  
-  console.log("allData", allData);
+ 
   
   React.useEffect(() => {
     dispatch(fetchProducts()); // Dispatching the thunk to fetch products
@@ -48,10 +45,8 @@ function ResponsiveAppBar() {
   // Remove duplicates using Set
   const uniqueCategories = [...new Set(category)];
   console.log("category", uniqueCategories);
-  
   const [cart, setCart] = useLocalStorageState('cartItems');
   const cartQuantity = cart?.length;
-
   // State for categories dropdown
   const [anchorElCategories, setAnchorElCategories] = React.useState(null);
   
@@ -76,24 +71,7 @@ function ResponsiveAppBar() {
     setAnchorElCategories(null);
   };
 
-  const [search, setSearch] = useState("");
-  const handleSearch = (e) => {
-    const searchValue = e.target.value;
-    setSearch(searchValue);
   
-    if (searchValue.trim() == "") {
-      // If the search input is empty, show all products
-      dispatch(setSearchItems(allData));
-      setSearch("")
-    } else {
-      const FilterValue = allData.filter((item) =>
-        item.title.toLowerCase().includes(searchValue.toLowerCase())
-      );
-      
-      dispatch(setSearchItems(FilterValue));
-     
-    }
-  };
   
   return (
     session !== null && (
@@ -135,28 +113,7 @@ function ResponsiveAppBar() {
             </Menu>
 
             {/* Search Bar */}
-            <Box sx={{ flexGrow: 1, mx: 4, display: 'flex' }}>
-              <input
-                type="text"
-                value={search}
-                onChange={handleSearch}
-                placeholder="Search for products, brands and more"
-                className="p-2 pl-8 rounded w-full border-none"
-                style={{ backgroundColor: "black", borderRadius: "2px" }}
-              />
-              <IconButton
-                sx={{
-                  backgroundColor: "#2874f0",
-                  color: "white",
-                  ml: -7,
-                  zIndex: 10,
-                  borderRadius: "2px",
-                  p: "10px",
-                }}
-              >
-                <SearchIcon />
-              </IconButton>
-            </Box>
+         <SearchFilter />
 
             {/* Links for Home, Products */}
             <Box sx={{ display: { xs: "none", md: "flex" }, mr: 3 }}>
