@@ -4,16 +4,15 @@ import { setCartItems } from "../../redux/cart";
 import useLocalStorageState from "use-local-storage-state";
 import useCart from "@/component/hooks/useCart";
 import { Button } from "@mui/joy";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Coupon from "@/component/common/coupon/Coupon";
+import toast from "react-hot-toast";
 
 const Cart = () => {
   const router = useRouter();
-  const [totalPrices, setTotalPrice] = useLocalStorageState("totalPrices", {
-    defaultValue: [],
-  });
+  const [totalPrices, setTotalPrice] = useLocalStorageState("totalPrices");
   const [cart, setCart] = useLocalStorageState("cartItems");
   const [coupon, setCoupon] = useState(""); // State for coupon input
   const [discount, setDiscount] = useState(0); // State for applied discount
@@ -36,22 +35,31 @@ const Cart = () => {
     dispatch(setCartItems(cartItems));
   };
 
-  const handleA6pplyCoupon = () => {
-    if (validCoupons[coupon]) {
-      setDiscount(validCoupons[coupon]); // Apply discount based on the coupon
-    } else {
-      alert("Invalid coupon code");
-      setDiscount(0);
-    }
-  };
+  //coupon
 
+  const couponCode = process.env.NEXT_PUBLIC_COUPON_CODE;
   let totalPrice = 0;
 
   cart?.forEach((item) => {
     totalPrice += item.price * item.quantity;
   });
-
+  console.log("totalPrice", totalPrice);
   setTotalPrice(totalPrice);
+
+  const handleApplyCoupon = () => {
+    if (coupon) {
+      if (coupon === couponCode && totalPrices >= 100) {
+        const priceDiscount = totalPrices - 30;
+        setDiscount(priceDiscount);
+        toast.success("Coupon added successfully");
+        console.log("dessssssss", priceDiscount);
+      } else {
+        toast.error("Invalid coupon code");
+        // alert("Invalid coupon code");
+        setDiscount(0);
+      }
+    }
+  };
 
   return (
     <div className="container mx-auto p-6 bg-gray-100 min-h-screen">
@@ -64,7 +72,6 @@ const Cart = () => {
         <>
           <div className="grid grid-cols-1 gap-6">
             {cart?.map((item) => {
-              totalPrice = item.price * item.quantity + totalPrice;
               console.log("totalPrice", item.price);
               return (
                 <div
@@ -73,7 +80,7 @@ const Cart = () => {
                 >
                   <Link href={`/product/${item.id}`}>
                     <img
-                      src={item.image}
+                      src={item?.images || item?.image}
                       alt={item.title}
                       className=" cart-item-images w-full h-40 object-cover rounded mb-4 md:mb-0 md:w-1/6 md:mr-4"
                     />
@@ -120,14 +127,29 @@ const Cart = () => {
               );
             })}
           </div>
-          <Coupon cart={cart} totalPrices={totalPrices} />
+          <Coupon
+            handleApplyCoupon={handleApplyCoupon}
+            coupon={coupon}
+            setCoupon={setCoupon}
+          />
           <div className="container cart-sticky-price px-2 mt-6">
-            <h2 className="text-white text-2xl">
-              Total: ${discount > 0 ? discountedPrice : totalPrice.toFixed(2)}
-            </h2>
             {discount > 0 && (
-              <p className="text-white">Discount applied: {discount}%</p>
+              <>
+                <p className="text-white">
+                  Discount applied: {discount.toFixed(2)}%
+                </p>
+                <h2 className="text-white text-2xl">
+                  Price: ${totalPrice.toFixed(2)}
+                </h2>
+              </>
             )}
+
+            <h2 className="text-white text-2xl">discount $30</h2>
+            <h2 className="text-white text-2xl">
+              Total: $
+              {discount > 0 ? discount.toFixed(2) : totalPrice.toFixed(2)}
+            </h2>
+
             <Button
               onClick={() => router.push("/payment")} // Use the appropriate router
               className="px-4 py-4 p-2 bg-green-500 text-white rounded"

@@ -15,6 +15,7 @@ const initialState = {
   cartItems: [],
   products: [],
   category: [],
+  
   loading: false,
   error: null,
 };

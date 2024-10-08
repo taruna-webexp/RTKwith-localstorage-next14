@@ -21,6 +21,8 @@ import { useDispatch, useSelector } from "react-redux";
 import React, { useState } from "react";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import SearchFilter from "../common/search/SearchFilter";
+import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
     right: -3,
@@ -32,13 +34,15 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 
 function ResponsiveAppBar() {
   const dispatch = useDispatch();
+  const pathName = usePathname();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const { data: session } = useSession();
   const category = useSelector((state) => state.cart.category);
- 
-  
-  React.useEffect(() => {
+  if (pathName === "/auth/signin") {
+    return null;
+  }
+  useEffect(() => {
     dispatch(fetchProducts()); // Dispatching the thunk to fetch products
   }, [dispatch]);
 
@@ -58,10 +62,7 @@ function ResponsiveAppBar() {
     setAnchorElNav(null);
   };
 
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
-
+ 
   // Category dropdown handlers
   const handleOpenCategoriesMenu = (event) => {
     setAnchorElCategories(event.currentTarget);

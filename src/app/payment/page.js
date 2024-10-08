@@ -4,76 +4,106 @@ import React from "react";
 import toast from "react-hot-toast";
 import useCart from "@/component/hooks/useCart";
 import { useRouter } from "next/navigation";
+import useLocalStorageState from "use-local-storage-state";
+import {
+  Container,
+  Typography,
+  Button,
+  Card,
+  CardContent,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  FormControl,
+  FormLabel,
+} from "@mui/material";
 
 const PaymentPage = () => {
   const { cartItems, totalPrice, removeItemToCart } = useCart();
   const [paymentMethod, setPaymentMethod] = React.useState("cash"); // Default to Cash on Delivery
   const router = useRouter();
+  const [totalPrices, setTotalPrice] = useLocalStorageState("totalPrices");
 
   const handlePayment = () => {
-    // Here you can implement the actual payment logic, like calling an API
-    // For demonstration, we're just showing a success message
     toast.success(`Payment successful via ${paymentMethod}!`);
-    // Clear cart after payment (optional)
-    // removeAllItems(); // Implement this function in your useCart if needed
+
     router.push("/"); // Redirect to the home page or a success page
   };
 
   if (cartItems.length === 0) {
-    return <p>Your cart is empty.</p>;
+    return (
+      <Container className="flex justify-center items-center h-screen">
+        <Typography variant="h6">Your cart is empty.</Typography>
+      </Container>
+    );
   }
 
   return (
-    <div className="p-4">
-      <h1 className="text-xl font-bold">Payment Page</h1>
-      <h2 className="mt-4">Review Your Cart</h2>
-      <ul>
-        {cartItems.map((item) => (
-          <li key={item.id} className="flex justify-between">
-            <span>
-              {item.title} (x{item.quantity})
-            </span>
-            <span>${(item.price * item.quantity).toFixed(2)}</span>
-            <button
-              onClick={() => removeItemToCart(item.id)}
-              className="text-red-500"
-            >
-              Remove
-            </button>
-          </li>
-        ))}
-      </ul>
-      <h3 className="mt-4">Total Price: ${totalPrice.toFixed(2)}</h3>
+    <Container className="p-4">
+      <Typography variant="h4" className="font-bold mb-4">
+        Payment
+      </Typography>
+      <Typography variant="h6" className="mb-2">
+        Review Your Cart
+      </Typography>
+      <Card className="mb-4">
+        <CardContent>
+          <ul className="space-y-2">
+            {cartItems.map((item) => (
+              <li key={item.id} className="flex justify-between items-center">
+                <span className="text-gray-700">
+                  {item.title} (x{item.quantity})
+                </span>
+                <span className="text-gray-700">
+                  ${(item.price * item.quantity).toFixed(2)}
+                </span>
+                <Button
+                  onClick={() => removeItemToCart(item.id)}
+                  className="text-red-500"
+                >
+                  Remove
+                </Button>
+              </li>
+            ))}
+          </ul>
+          <Typography variant="h6" className="mt-4">
+            Total Price: <strong>${totalPrices}</strong>
+          </Typography>
+        </CardContent>
+      </Card>
 
-      <h2 className="mt-4">Select Payment Method</h2>
-      <div>
-        <label>
-          <input
-            type="radio"
+      <Typography variant="h6" className="mb-2">
+        Select Payment Method
+      </Typography>
+      <FormControl component="fieldset" className="mb-4">
+        <FormLabel component="legend">Payment Method</FormLabel>
+        <RadioGroup
+          row
+          value={paymentMethod}
+          onChange={(e) => setPaymentMethod(e.target.value)}
+        >
+          <FormControlLabel
             value="online"
-            checked={paymentMethod === "online"}
-            onChange={() => setPaymentMethod("online")}
+            control={<Radio color="primary" />}
+            label="Online Pay"
           />
-          Online Pay
-        </label>
-        <label className="ml-4">
-          <input
-            type="radio"
+          <FormControlLabel
             value="cash"
-            checked={paymentMethod === "cash"}
-            onChange={() => setPaymentMethod("cash")}
+            control={<Radio color="primary" />}
+            label="Cash on Delivery"
           />
-          Cash on Delivery
-        </label>
-      </div>
+        </RadioGroup>
+      </FormControl>
 
-      <button
+      <Button
+        variant="contained"
+        color="primary"
         onClick={handlePayment}
-        className="mt-4 p-2 bg-blue-500 text-white rounded"
+        className="mt-4"
       >
         Proceed to Pay
-      </button>
-    </div>
+      </Button>
+    </Container>
   );
 };
 

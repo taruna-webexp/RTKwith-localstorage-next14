@@ -52,13 +52,20 @@ const SingleProduct = ({ params }) => {
             <span className="font-bold">Product details : </span>
             {product.description}
           </p>
-
-          <button
-            onClick={handleAddToCart}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-200 ease-in-out"
-          >
-            Add to Cart
-          </button>
+          <div className="flex-1">
+            <button
+              onClick={handleAddToCart}
+              className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3  mx-4 px-6 rounded-lg shadow-md transition duration-200 ease-in-out"
+            >
+              Add to Cart
+            </button>
+            <button
+              onClick={() => router.push("/payment")}
+              className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 mx-4 px-12 rounded-lg shadow-md transition duration-200 ease-in-out"
+            >
+              Buy
+            </button>
+          </div>{" "}
         </div>
       </div>
     </div>
