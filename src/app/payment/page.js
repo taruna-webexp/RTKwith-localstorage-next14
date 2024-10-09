@@ -1,108 +1,216 @@
-// pages/payment.js
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
-import useCart from "@/component/hooks/useCart";
-import { useRouter } from "next/navigation";
-import useLocalStorageState from "use-local-storage-state";
+import useCart from "@/component/hooks/useCart"; // Ensure this is your hook for managing cart
+import { useRouter, useSearchParams } from "next/navigation";
+import { loadStripe } from "@stripe/stripe-js";
 import {
   Container,
   Typography,
   Button,
   Card,
-  CardContent,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-  FormControl,
-  FormLabel,
+  Grid,
+  Divider,
 } from "@mui/material";
+import StripeCheckout from "react-stripe-checkout";
+import PaymentSuccess from "@/component/modal/PaymentSuccessModal";
 
 const PaymentPage = () => {
-  const { cartItems, totalPrice, removeItemToCart } = useCart();
-  const [paymentMethod, setPaymentMethod] = React.useState("cash"); // Default to Cash on Delivery
+  const { removeItemToCart, totalPrice } = useCart(); // Assuming this is a hook that manages your cart
   const router = useRouter();
-  const [totalPrices, setTotalPrice] = useLocalStorageState("totalPrices");
+  const [paymentMethod, setPaymentMethod] = useState("cash");
+  const [openDialog, setOpenDialog] = useState(false);
+  const [tokenData, setTokenData] = useState();
+  const searchParams = useSearchParams();
+  const [itemData, setItemData] = useState([]);
 
-  const handlePayment = () => {
-    toast.success(`Payment successful via ${paymentMethod}!`);
+  useEffect(() => {
+    const searchParmData = searchParams.get("items");
+    if (searchParmData) {
+      const decodedData = searchParmData;
+      const parsedData = JSON.parse(decodedData);
+      setItemData(parsedData);
+    }
+  }, [searchParams]);
 
-    router.push("/"); // Redirect to the home page or a success page
+  const handleClickOpen = () => {
+    setOpenDialog(true);
   };
 
-  if (cartItems.length === 0) {
+  const handleClose = () => {
+    setOpenDialog(false);
+    router.push("/");
+  };
+
+  const token = (token) => {
+    setTokenData(token);
+    handleClickOpen();
+  };
+
+  const handleRadioChange = (e) => {
+    const selectedMethod = e.target.value;
+    setPaymentMethod(selectedMethod);
+
+    if (selectedMethod === "cash") {
+      toast.success(`Payment successful via ${selectedMethod}!`);
+      router.push("/");
+    }
+  };
+
+  const removeItemToCartHandle = (id) => {
+    removeItemToCart(id); // Directly use removeItemToCart from the hook
+    setItemData((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  if (itemData.length === 0) {
     return (
       <Container className="flex justify-center items-center h-screen">
-        <Typography variant="h6">Your cart is empty.</Typography>
+        <Typography variant="h6" align="center">
+          Your cart is empty.
+        </Typography>
       </Container>
     );
   }
-
+  let total = 0;
   return (
-    <Container className="p-4">
-      <Typography variant="h4" className="font-bold mb-4">
-        Payment
+    <Container maxWidth="md" className="py-10">
+      <Typography
+        variant="h4"
+        className="font-bold text-center mb-6"
+        style={{ color: "#1976d2" }}
+      >
+        Complete Your Purchase
       </Typography>
-      <Typography variant="h6" className="mb-2">
-        Review Your Cart
-      </Typography>
-      <Card className="mb-4">
-        <CardContent>
-          <ul className="space-y-2">
-            {cartItems.map((item) => (
-              <li key={item.id} className="flex justify-between items-center">
-                <span className="text-gray-700">
-                  {item.title} (x{item.quantity})
-                </span>
-                <span className="text-gray-700">
-                  ${(item.price * item.quantity).toFixed(2)}
-                </span>
-                <Button
-                  onClick={() => removeItemToCart(item.id)}
-                  className="text-red-500"
-                >
-                  Remove
-                </Button>
-              </li>
-            ))}
-          </ul>
-          <Typography variant="h6" className="mt-4">
-            Total Price: <strong>${totalPrices}</strong>
-          </Typography>
-        </CardContent>
+
+      {/* Review Cart Section */}
+      <Card
+        elevation={3}
+        className="mb-6"
+        style={{ padding: "20px", borderRadius: "15px" }}
+      >
+        <Typography
+          variant="h6"
+          className="mb-4 text-center"
+          style={{ fontWeight: 600 }}
+        >
+          Review Your Cart
+        </Typography>
+        <Divider />
+        <Grid container spacing={2} className="my-4">
+          {itemData.map((item) => {
+            total = item.price * item.quantity + total;
+            return (
+              <Grid
+                item
+                xs={12}
+                key={item.id}
+                className="flex justify-between items-center"
+                style={{ padding: "10px 0" }}
+              >
+                <Grid item xs={2}>
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="rounded"
+                    style={{ width: "100%" }}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography variant="body1" style={{ fontWeight: 500 }}>
+                    {item.title} (x{item.quantity})
+                  </Typography>
+                </Grid>
+                <Grid item xs={2}>
+                  <Typography variant="body1" className="text-gray-600">
+                    ${(item.price * item.quantity).toFixed(2)}
+                  </Typography>
+                </Grid>
+                <Grid item xs={2}>
+                  <Button
+                    onClick={() => removeItemToCartHandle(item.id)}
+                    className="text-red-500"
+                    style={{ color: "#f44336", fontWeight: 500 }}
+                  >
+                    Remove
+                  </Button>
+                </Grid>
+              </Grid>
+            );
+          })}
+        </Grid>
+        <Divider />
+        <Typography
+          variant="h6"
+          className="text-right mt-4"
+          style={{ fontWeight: "bold", color: "#1976d2" }}
+        >
+          Total Price: ${total.toFixed(2)}
+        </Typography>
       </Card>
 
-      <Typography variant="h6" className="mb-2">
-        Select Payment Method
-      </Typography>
-      <FormControl component="fieldset" className="mb-4">
-        <FormLabel component="legend">Payment Method</FormLabel>
-        <RadioGroup
-          row
-          value={paymentMethod}
-          onChange={(e) => setPaymentMethod(e.target.value)}
-        >
-          <FormControlLabel
-            value="online"
-            control={<Radio color="primary" />}
-            label="Online Pay"
-          />
-          <FormControlLabel
-            value="cash"
-            control={<Radio color="primary" />}
-            label="Cash on Delivery"
-          />
-        </RadioGroup>
-      </FormControl>
-
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handlePayment}
-        className="mt-4"
+      {/* Payment Method Section */}
+      <Card
+        elevation={3}
+        className="mb-6"
+        style={{ padding: "20px", borderRadius: "15px" }}
       >
-        Proceed to Pay
-      </Button>
+        <Typography
+          variant="h6"
+          className="mb-4 text-center"
+          style={{ fontWeight: 600 }}
+        >
+          Select Payment Method
+        </Typography>
+        <Grid container justifyContent="center">
+          <Button
+            onClick={() => handleRadioChange({ target: { value: "online" } })}
+          >
+            Pay Online
+          </Button>
+          <Button
+            onClick={() => handleRadioChange({ target: { value: "cash" } })}
+          >
+            Cash on Delivery
+          </Button>
+        </Grid>
+
+        {paymentMethod === "online" && (
+          <div className="text-center">
+            <StripeCheckout
+              name="My Store"
+              token={token}
+              stripeKey={process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY}
+              amount={total * 100} // Amount in cents
+              currency="INR"
+              shippingAddress
+              billingAddress
+              zipCode
+            >
+              <Button
+                variant="contained"
+                color="primary"
+                style={{
+                  background:
+                    "linear-gradient(90deg, #1976d2 0%, #42a5f5 100%)",
+                  padding: "10px 20px",
+                  marginTop: "10px",
+                }}
+              >
+                Pay Now
+              </Button>
+            </StripeCheckout>
+          </div>
+        )}
+      </Card>
+
+      {/* Modal for Payment Success */}
+      <PaymentSuccess
+        open={openDialog}
+        handleClose={handleClose}
+        tokenData={tokenData}
+        totalPrice={total}
+        itemData={itemData}
+      />
     </Container>
   );
 };

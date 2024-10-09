@@ -1,25 +1,54 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useCart from "@/component/hooks/useCart";
 import Link from "next/link";
 import { fetchProducts } from "@/redux/cart";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import IconButton from "@mui/material/IconButton";
 
 const Home = () => {
   const dispatch = useDispatch();
-  const { cartItems, addItemToCart } = useCart();
+  const {
+    wishListItems,
+    addItemToCart,
+    addItemToWishList,
+    removeItemFromWishList,
+  } = useCart();
 
   const products = useSelector((state) => state.cart.products);
   const loading = useSelector((state) => state.cart.loading);
   const error = useSelector((state) => state.cart.error);
 
+  // State to handle client-side rendering of wishlist
+  const [isMounted, setIsMounted] = useState(false);
+
   useEffect(() => {
     dispatch(fetchProducts()); // Dispatching the thunk to fetch products
+    setIsMounted(true); // Set mounted to true after the component has rendered
   }, [dispatch]);
 
-  if (loading)
+  if (loading) {
     return <div className="text-center mt-10">Loading products...</div>;
-  if (error) return <div className="text-center mt-10">Error: {error}</div>;
+  }
+  if (error) {
+    return <div className="text-center mt-10">Error: {error}</div>;
+  }
+
+  const handleWishList = (item) => {
+    // Check if the item is already in the wishlist
+    const isInWishlist = wishListItems.some(
+      (wishItem) => wishItem.id === item.id
+    );
+
+    if (isInWishlist) {
+      // If the item is already in the wishlist, remove it
+      removeItemFromWishList(item.id);
+    } else {
+      // If not, add the item to the wishlist
+      addItemToWishList(item);
+    }
+  };
 
   return (
     <div className="container mx-auto p-6">
@@ -28,9 +57,10 @@ const Home = () => {
         {products?.map((product) => (
           <div
             key={product.id}
-            className="border rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 p-4 bg-white"
+            className="relative border rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 p-4 bg-white"
           >
-            <div className="flex justify-center mb-4">
+            {/* Product Image Container */}
+            <div className="relative flex justify-center mb-4">
               <Link href={`/product/${product.id}`}>
                 <img
                   src={product.image}
@@ -38,7 +68,25 @@ const Home = () => {
                   className="h-40 object-contain cursor-pointer"
                 />
               </Link>
+
+              {/* Heart Icon on Top-Right of the Image */}
+              <div className="absolute top-0 right-0 m-2">
+                {isMounted && ( // Only render this after the component is mounted
+                  <IconButton onClick={() => handleWishList(product)}>
+                    <FavoriteIcon
+                      color={
+                        wishListItems.some(
+                          (wishItem) => wishItem.id === product.id
+                        )
+                          ? "error"
+                          : "inherit"
+                      }
+                    />
+                  </IconButton>
+                )}
+              </div>
             </div>
+
             <h2 className="text-lg font-semibold mb-2">{product.title}</h2>
             <p className="text-gray-600 mb-4">${product.price}</p>
             <Link href={`/product/${product.id}`}>
@@ -48,7 +96,7 @@ const Home = () => {
             </Link>
             <button
               onClick={() => addItemToCart(product)}
-              className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 w-full rounded-md transition-colors duration-300"
+              className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 w-full rounded-md transition-colors duration-300"
             >
               Add to Cart
             </button>

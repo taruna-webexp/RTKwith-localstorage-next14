@@ -7,7 +7,6 @@ import { Checkbox, Grid } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Slider from "@mui/material/Slider";
-import Filters from "@/component/filters/Filters";
 
 export default function Category({ params }) {
   const productCategory = params.slug;
@@ -74,6 +73,28 @@ export default function Category({ params }) {
     }
   };
 
+  const marks = [
+    { value: 0, label: "0" },
+    { value: 100, label: "$100" },
+    { value: 500, label: "$500" },
+    { value: 1000, label: "$1000" },
+  ];
+
+  const handlePriceChange = (event, newValue) => {
+    setPriceRange(newValue);
+  };
+
+  const ratings = [
+    { value: 4, label: "4 & above" },
+    { value: 3, label: "3 & above" },
+  ];
+
+  const handleRatingChange = (event) => {
+    const selectedRating = parseInt(event.target.value);
+    console.log("selected", selectedRating);
+    setRatingRange(selectedRating);
+  };
+
   return (
     <div className="container mx-auto px-4 py-6">
       <h1 className="text-2xl font-bold mb-4 text-center">
@@ -82,7 +103,35 @@ export default function Category({ params }) {
       <Grid container spacing={2} padding={2}>
         {/* First Column */}
         <Grid item xs={6} sm={6} md={2}>
-          <Filters category={category} filterData={setFilteredCategory} />
+          <div className="border border-gray-300 rounded-lg p-4 hover:shadow-lg transition-shadow duration-200">
+            <ul>
+              <li>
+                Price
+                <Slider
+                  value={priceRange}
+                  onChange={handlePriceChange}
+                  valueLabelDisplay="auto"
+                  min={0}
+                  max={1000}
+                  step={10}
+                  marks={marks}
+                />
+              </li>
+              <li>
+                Top Rating
+                {ratings.map((rate) => (
+                  <div key={rate.value}>
+                    <Checkbox
+                      onChange={handleRatingChange}
+                      value={rate.value}
+                      checked={ratingRange === rate.value}
+                    />
+                    {rate.label}
+                  </div>
+                ))}
+              </li>
+            </ul>
+          </div>
         </Grid>
 
         {/* Products Grid */}

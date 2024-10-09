@@ -3,10 +3,9 @@ import { getToken } from "next-auth/jwt";
 import { routesUrl } from "./utils/pagesurl";
 
 export const ProtectedRoutes = [
-  routesUrl.product,
   routesUrl.user,
-  routesUrl.cart,
-  routesUrl.category,
+  // routesUrl.cart,
+  routesUrl.payment,
 ];
 export const UnprotectedRoutes = [routesUrl.signIn];
 

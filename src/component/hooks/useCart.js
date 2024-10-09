@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import useLocalStorageState from "use-local-storage-state";
 
@@ -7,7 +7,21 @@ export default function useCart() {
   const [cartItems, setCartItems] = useLocalStorageState("cartItems", {
     defaultValue: [],
   });
+  const [wishListItems, setWishListItems] = useLocalStorageState(
+    "wishListItems",
+    {
+      defaultValue: [],
+    }
+  );
   const [totalPrice, setTotalPrice] = useState(0);
+
+  useEffect(() => {
+    const total = cartItems.reduce(
+      (acc, item) => acc + item.price * item.quantity,
+      0
+    );
+    setTotalPrice(total);
+  }, [cartItems]);
 
   const addItemToCart = (newItem) => {
     const itemExists = cartItems.some((item) => item.id === newItem.id);
@@ -15,52 +29,58 @@ export default function useCart() {
     if (itemExists) {
       toast.error("Item already exists in the cart");
     } else {
-      // Add the new item to the cart
       setCartItems((prevItems) => [...prevItems, { ...newItem, quantity: 1 }]);
       toast.success("Item Added Successfully!");
+    }
+  };
 
-      // Update the total price
-      const newTotalPrice = totalPrice + newItem.price;
-      setTotalPrice(newTotalPrice);
+  const addItemToWishList = (newItem) => {
+    const itemExists = wishListItems.some((item) => item.id === newItem.id);
+
+    if (itemExists) {
+      toast.error("Item already exists in the Wishlist");
+    } else {
+      setWishListItems((prevItems) => [
+        ...prevItems,
+        { ...newItem, quantity: 1 },
+      ]);
+      toast.success("Item Added Successfully!");
     }
   };
 
   const removeItemToCart = (id) => {
-    const itemToRemove = cartItems.find((item) => item.id === id);
-    if (itemToRemove) {
-      // Remove the item from the cart
-      setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
-
-      // Update the total price
-      setTotalPrice(
-        (prevPrice) => prevPrice - itemToRemove.price * itemToRemove.quantity
-      );
-
-      toast.success("Item removed successfully!");
-    }
+    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
+    toast.success("Item removed successfully!");
+  };
+  const removeItemFromWishList = (id) => {
+    setWishListItems((prevItems) => prevItems.filter((item) => item.id !== id));
+    toast.success("Item removed successfully!");
   };
 
   const decrementToCart = (id) => {
     setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id
-          ? { ...item, quantity: Math.max(item.quantity - 1, 1) }
-          : item
-      )
+      prevItems.map((item) => {
+        if (item.id === id) {
+          const newQuantity = Math.max(item.quantity - 1, 1);
+          return { ...item, quantity: newQuantity };
+        }
+        return item;
+      })
     );
   };
 
   const incrementToCart = (id) => {
     setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id
-          ? { ...item, quantity: Math.min(item.quantity + 1, 10) }
-          : item
-      )
+      prevItems.map((item) => {
+        if (item.id === id) {
+          const newQuantity = Math.min(item.quantity + 1, 10);
+          return { ...item, quantity: newQuantity };
+        }
+        return item;
+      })
     );
   };
 
-  // In useCart.js
   const removeAllItems = () => {
     setCartItems([]);
     setTotalPrice(0);
@@ -68,11 +88,14 @@ export default function useCart() {
 
   return {
     cartItems,
+    wishListItems,
     addItemToCart,
     totalPrice,
     removeItemToCart,
-    removeAllItems, // Add this line
+    removeItemFromWishList,
+    removeAllItems,
     incrementToCart,
+    addItemToWishList,
     decrementToCart,
   };
 }
