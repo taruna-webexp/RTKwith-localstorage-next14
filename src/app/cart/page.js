@@ -52,19 +52,28 @@ const Cart = () => {
     dispatch(setCartItems(cartItems));
   };
 
+  //coupon
+
+  const couponCode = process.env.NEXT_PUBLIC_COUPON_CODE;
+  let totalPrice = 0;
+
+  cart?.forEach((item) => {
+    totalPrice += item.price * item.quantity;
+  });
+  console.log("totalPrice", totalPrice);
+  setTotalPrice(totalPrice);
+
   const handleApplyCoupon = () => {
-    if (coupon && validCoupons[coupon]) {
-      const discountValue = validCoupons[coupon];
-      if (totalPrices >= 100) {
-        const newTotal = totalPrices - discountValue;
-        setDiscount(newTotal);
-        toast.success("Coupon applied successfully");
+    if (coupon) {
+      if (coupon == couponCode && totalPrices >= 100) {
+        const priceDiscount = totalPrices - 30;
+        setDiscount(priceDiscount);
+        toast.success("Coupon added successfully");
+        console.log("dessssssss", priceDiscount);
       } else {
-        toast.error("Minimum cart value should be $100 to apply this coupon.");
+        toast.error("Invalid coupon code");
+        setDiscount(0);
       }
-    } else {
-      toast.error("Invalid coupon code");
-      setDiscount(0);
     }
   };
   const paymentHandler = (cartItems) => {

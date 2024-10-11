@@ -88,12 +88,17 @@ const Home = () => {
             </div>
 
             <h2 className="text-lg font-semibold mb-2">{product.title}</h2>
-            <p className="text-gray-600 mb-4">${product.price}</p>
+            <p className="text-gray-600 ">${product.price}</p>
+            <span className="text-sm text-gray-600 ">
+              Rating: {product.rating.rate} ({product.rating.count}
+              reviews)
+            </span>
             <Link href={`/product/${product.id}`}>
-              <button className="bg-blue-500 hover:bg-blue-600 text-white mb-2 font-semibold py-2 px-4 w-full rounded-md transition-colors duration-300">
+              <button className="bg-blue-500 hover:bg-blue-600 text-white mt-2 mb-2 font-semibold py-2 px-4 w-full rounded-md transition-colors duration-300">
                 View Details
               </button>
             </Link>
+
             <button
               onClick={() => addItemToCart(product)}
               className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 w-full rounded-md transition-colors duration-300"

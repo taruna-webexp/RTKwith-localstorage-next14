@@ -1,9 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
-import useCart from "@/component/hooks/useCart"; // Ensure this is your hook for managing cart
+import useCart from "@/component/hooks/useCart";
 import { useRouter, useSearchParams } from "next/navigation";
-import { loadStripe } from "@stripe/stripe-js";
 import {
   Container,
   Typography,
@@ -12,8 +11,10 @@ import {
   Grid,
   Divider,
 } from "@mui/material";
-import StripeCheckout from "react-stripe-checkout";
 import PaymentSuccess from "@/component/modal/PaymentSuccessModal";
+
+import StripePayment from "@/component/common/payment/StripePayment";
+import GooglePayButtonComponent from "@/component/common/payment/GooglePayButton";
 
 const PaymentPage = () => {
   const { removeItemToCart, totalPrice } = useCart(); // Assuming this is a hook that manages your cart
@@ -175,30 +176,20 @@ const PaymentPage = () => {
         </Grid>
 
         {paymentMethod === "online" && (
-          <div className="text-center">
-            <StripeCheckout
-              name="My Store"
-              token={token}
-              stripeKey={process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY}
-              amount={total * 100} // Amount in cents
-              currency="INR"
-              shippingAddress
-              billingAddress
-              zipCode
-            >
-              <Button
-                variant="contained"
-                color="primary"
-                style={{
-                  background:
-                    "linear-gradient(90deg, #1976d2 0%, #42a5f5 100%)",
-                  padding: "10px 20px",
-                  marginTop: "10px",
-                }}
-              >
-                Pay Now
-              </Button>
-            </StripeCheckout>
+          <div className="text-center justify-center alignItem-center gap-4 flex">
+            {/* Google Pay Button */}
+            <GooglePayButtonComponent
+              totalPrice={total}
+              onPaymentSuccess={() => {
+                handleClickOpen(); // Show success modal
+              }}
+            />
+
+            {/* Stripe Payment Button */}
+            <StripePayment
+              totalPrice={total}
+              onToken={token} // Pass the token handler to Stripe component
+            />
           </div>
         )}
       </Card>

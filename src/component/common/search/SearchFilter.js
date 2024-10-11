@@ -1,11 +1,12 @@
 "use client";
 import { fetchProducts, setSearchItems } from "@/redux/cart";
-import { Box, Button } from "@mui/joy";
+import { Box } from "@mui/joy";
 import { IconButton } from "@mui/material";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import SearchIcon from "@mui/icons-material/Search";
 import { useRouter } from "next/navigation";
+
 export default function SearchFilter() {
   const dispatch = useDispatch();
 

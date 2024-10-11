@@ -4,6 +4,7 @@ import useCart from "@/component/hooks/useCart";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify"; // Assuming you're using react-toastify for notifications
 import { useSelector } from "react-redux";
+import { useSession } from "next-auth/react";
 
 const SingleProduct = ({ params }) => {
   const productId = params.slug;
@@ -11,7 +12,7 @@ const SingleProduct = ({ params }) => {
   const router = useRouter();
   const [product, setProduct] = useState(null);
   const products = useSelector((state) => state.cart.products);
-
+  const session = useSession();
   useEffect(() => {
     // Ensure productId is a string
     if (typeof productId === "string") {
@@ -39,7 +40,15 @@ const SingleProduct = ({ params }) => {
   if (!product) {
     return <div className="text-center mt-10">Loading...</div>;
   }
-
+  const paymentHandler = (product) => {
+    if (session.data === null) {
+      router.push("/auth/signin");
+    } else {
+      const itemData = JSON.stringify([product]);
+      const encodedData = encodeURIComponent(itemData);
+      router.push(`/payment?items=${encodedData}`);
+    }
+  };
   return (
     <div className="container mx-auto p-6">
       <div className="flex flex-col md:flex-row gap-10">
@@ -67,11 +76,7 @@ const SingleProduct = ({ params }) => {
               Add to Cart
             </button>
             <button
-              onClick={() => {
-                const itemData = JSON.stringify([product]);
-                const encodedData = encodeURIComponent(itemData);
-                router.push(`/payment?items=${encodedData}`);
-              }}
+              onClick={() => paymentHandler(product)}
               className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 mx-4 px-12 rounded-lg shadow-md transition duration-200 ease-in-out"
             >
               Buy

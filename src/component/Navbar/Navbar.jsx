@@ -69,7 +69,7 @@ function ResponsiveAppBar() {
               sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}
             >
               <Link href={routesUrl.home}>
-                <Typography color="white" variant="h5" className="font-bold cursor-pointer">Flipcart</Typography>
+                <Typography color="white" variant="h5" className="font-bold cursor-pointer">Shoppy </Typography>
               </Link>
             </Typography>
 

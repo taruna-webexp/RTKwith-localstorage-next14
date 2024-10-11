@@ -27,7 +27,7 @@ export default function Filters({ category, filterData }) {
   }, [category, ratingRange]);
 
   const marks = [
-    { value: 0, label: "0" },
+    { value: 0, label: "" },
     { value: 100, label: "$100" },
     { value: 500, label: "$500" },
     { value: 1000, label: "$1000" },

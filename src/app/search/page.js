@@ -68,7 +68,7 @@ export default function Search() {
                     </p>
 
                     <span className="text-sm text-gray-600">
-                      Rating: {product.rating.rate} ({product.rating.count}{" "}
+                      Rating: {product.rating.rate} ({product.rating.count}
                       reviews)
                     </span>
                     <div className="flex justify-evenly mt-3">

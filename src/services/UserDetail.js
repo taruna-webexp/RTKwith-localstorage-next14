@@ -2,7 +2,7 @@ import ApiClient from "./baseapi";
 
 const userDetail = {
   getAllUser: () => {
-    return ApiClient().get("/user/getAll?start=%2C&length=%2C", {
+    return ApiClient().get("/user/getAll", {
       timeout: 5000,
     });
   },

@@ -1,7 +1,7 @@
 import React from "react";
 import StripeCheckout from "react-stripe-checkout";
 
-export default function StripePayment({token,totalPrices}) {
+export default function StripePayment({ token, totalPrices }) {
   return (
     <StripeCheckout
       name="My Store"
@@ -13,18 +13,20 @@ export default function StripePayment({token,totalPrices}) {
       billingAddress
       zipCode
     >
-      <Button
+      <button
         variant="contained"
         color="primary"
+        className="px-6"
         style={{
-          background: "linear-gradient(90deg, #1976d2 0%, #42a5f5 100%)",
-          padding: "10px 20px",
-          fontWeight: "bold",
+          background: "white",
+          padding: "10px 60px 10px 60px",
+          fontWeight: "normal",
           borderRadius: "30px",
+          border: "2px solid",
         }}
       >
-        Proceed to Pay
-      </Button>
+        Pay with Stripe
+      </button>
     </StripeCheckout>
   );
 }
