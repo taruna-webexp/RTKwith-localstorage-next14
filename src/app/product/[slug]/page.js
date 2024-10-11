@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import useCart from "@/component/hooks/useCart";
 import { useRouter } from "next/navigation";
-import { toast } from "react-toastify"; // Assuming you're using react-toastify for notifications
+import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import { useSession } from "next-auth/react";
 
@@ -13,8 +13,9 @@ const SingleProduct = ({ params }) => {
   const [product, setProduct] = useState(null);
   const products = useSelector((state) => state.cart.products);
   const session = useSession();
+
   useEffect(() => {
-    // Ensure productId is a string
+    // Fetch product details based on the productId from Redux state
     if (typeof productId === "string") {
       const singleProduct = products.find(
         (item) => item.id.toString() === productId
@@ -28,6 +29,7 @@ const SingleProduct = ({ params }) => {
   }, [productId, products]);
 
   const handleAddToCart = () => {
+    // Add product to cart and show success message
     if (product) {
       addItemToCart(product);
       toast.success("Item added to cart!");
@@ -36,11 +38,8 @@ const SingleProduct = ({ params }) => {
     }
   };
 
-  // Show a loading indicator while the product is being fetched
-  if (!product) {
-    return <div className="text-center mt-10">Loading...</div>;
-  }
   const paymentHandler = (product) => {
+    // Redirect to signin if not logged in, otherwise to payment page
     if (session.data === null) {
       router.push("/auth/signin");
     } else {
@@ -49,6 +48,12 @@ const SingleProduct = ({ params }) => {
       router.push(`/payment?items=${encodedData}`);
     }
   };
+
+  // Show loading while product details are being fetched
+  if (!product) {
+    return <div className="text-center mt-10">Loading...</div>;
+  }
+
   return (
     <div className="container mx-auto p-6">
       <div className="flex flex-col md:flex-row gap-10">

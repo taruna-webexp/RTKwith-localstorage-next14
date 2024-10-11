@@ -2,8 +2,7 @@
 import Filters from "@/component/filters/Filters";
 import useCart from "@/component/hooks/useCart";
 import { Grid } from "@mui/joy";
-import { useSearchParams } from "next/navigation";
-import { useRouter } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 export default function Search() {
@@ -13,6 +12,7 @@ export default function Search() {
   const router = useRouter();
 
   useEffect(() => {
+    // Get filter data from search parameters and update state
     const searchParmData = searchParams.get("filter");
     if (searchParmData) {
       const parsedData = JSON.parse(searchParmData);
@@ -20,7 +20,7 @@ export default function Search() {
     }
   }, [searchParams]);
 
-  // Helper function to truncate description to 30 words
+  // Helper function to truncate description to a specified word limit
   const truncateDescription = (description, wordLimit) => {
     const words = description.split(" ");
     return words.length > wordLimit
@@ -28,6 +28,7 @@ export default function Search() {
       : description;
   };
 
+  // Add selected item to the cart
   const handleAddToCart = (item) => {
     if (item) {
       addItemToCart(item);
@@ -37,6 +38,7 @@ export default function Search() {
   return (
     <Grid container spacing={2} padding={2}>
       <Grid item xs={2}>
+        {/* Filters sidebar */}
         <Filters category={filteredProducts} filterData={setFilteredProducts} />
       </Grid>
       <Grid item xs={10}>
@@ -68,17 +70,19 @@ export default function Search() {
                     </p>
 
                     <span className="text-sm text-gray-600">
-                      Rating: {product.rating.rate} ({product.rating.count}
+                      Rating: {product.rating.rate} ({product.rating.count}{" "}
                       reviews)
                     </span>
                     <div className="flex justify-evenly mt-3">
                       <div className="flex space-x-2">
+                        {/* Button to add item to cart */}
                         <button
                           onClick={() => handleAddToCart(product)}
                           className="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 transition duration-200"
                         >
                           Add to Cart
                         </button>
+                        {/* Button to navigate to payment page */}
                         <button
                           onClick={() => {
                             const itemData = JSON.stringify([product]);

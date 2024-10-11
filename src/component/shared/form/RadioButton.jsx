@@ -1,5 +1,4 @@
 import React from "react";
-
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import { Controller } from "react-hook-form";
@@ -25,7 +24,7 @@ const RadioButton = ({
             aria-labelledby="demo-radio-buttons-group-label"
             {...field}
           >
-            {" "}
+            
             {radioButtonData.map((item) => (
               <>
                 <FormControlLabel

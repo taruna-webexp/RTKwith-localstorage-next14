@@ -1,7 +1,5 @@
 "use client";
-import { FormControl, Grid } from "@mui/joy";
-import InputField from "@/component/shared/form/InputField";
-import { FormLabel } from "@mui/joy";
+import { Grid } from "@mui/joy";
 import { Sheet } from "@mui/joy";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -10,6 +8,7 @@ import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { errorMsg, successMsg } from "@/component/Toastmsg/toaster";
+import FormInput from "@/component/form/InputField";
 
 const Login = () => {
   // Hooks should be defined unconditionally
@@ -47,9 +46,9 @@ const Login = () => {
       {/* Left Image Section */}
       <Grid item xs={12} sm={6} md={4} className="flex justify-center">
         <img
-          src="/assets/login2.jpg" // Replace with your image path
+          src="/assets/login2.jpg"
           alt="Login Illustration"
-          className="w-full h-full object-cover rounded-lg shadow-lg" // Added rounded corners and shadow
+          className="w-full h-full object-cover rounded-lg shadow-lg"
         />
       </Grid>
 
@@ -80,29 +79,27 @@ const Login = () => {
               </Typography>
             </div>
 
-            <div>
-              <FormControl fullWidth>
-                <FormLabel>Email</FormLabel>
-                <InputField
-                  control={control}
-                  name="email"
-                  type="email"
-                  placeholder="demo@yopmail.com"
-                  required
-                />
-              </FormControl>
+            <div className=" mt-6 mb-4">
+              <FormInput
+                control={control}
+                name="email"
+                inputType="email"
+                label="Email"
+                placeholder="demo@yopmail.com"
+                errors=""
+                className=""
+              />
             </div>
-            <div>
-              <FormControl fullWidth>
-                <FormLabel>Password</FormLabel>
-                <InputField
-                  control={control}
-                  name="password"
-                  type="password"
-                  placeholder="12345"
-                  required
-                />
-              </FormControl>
+            <div className="mb-4">
+              <FormInput
+                control={control}
+                name="password"
+                inputType="password"
+                label="Password"
+                placeholder="12345"
+                errors=""
+                className=""
+              />
             </div>
             <div>
               <Button

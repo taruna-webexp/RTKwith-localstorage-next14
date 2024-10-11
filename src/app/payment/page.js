@@ -12,57 +12,65 @@ import {
   Divider,
 } from "@mui/material";
 import PaymentSuccess from "@/component/modal/PaymentSuccessModal";
-
 import StripePayment from "@/component/common/payment/StripePayment";
 import GooglePayButtonComponent from "@/component/common/payment/GooglePayButton";
 
 const PaymentPage = () => {
-  const { removeItemToCart, totalPrice } = useCart(); // Assuming this is a hook that manages your cart
+  // Custom hook for managing cart items and total price
+  const { removeItemToCart, totalPrice } = useCart();
   const router = useRouter();
+
+  // Payment state management
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [openDialog, setOpenDialog] = useState(false);
   const [tokenData, setTokenData] = useState();
+  // URL search parameters for handling item data passed to the payment page
   const searchParams = useSearchParams();
-  const [itemData, setItemData] = useState([]);
+  const [itemData, setItemData] = useState([]); // Items in the cart
 
   useEffect(() => {
-    const searchParmData = searchParams.get("items");
+    const searchParmData = searchParams.get("items"); // Get cart items from URL parameters
     if (searchParmData) {
       const decodedData = searchParmData;
-      const parsedData = JSON.parse(decodedData);
-      setItemData(parsedData);
+      const parsedData = JSON.parse(decodedData); // Parse the item data
+      setItemData(parsedData); // Update the state with parsed cart items
     }
   }, [searchParams]);
 
-  const handleClickOpen = () => {
-    setOpenDialog(true);
-  };
+  // Opens the modal on successful payment
+  const handleClickOpen = () => setOpenDialog(true);
 
+  // Closes the modal and redirects to the homepage
   const handleClose = () => {
     setOpenDialog(false);
     router.push("/");
   };
 
+  // Stores the payment token received from Stripe and opens the modal
   const token = (token) => {
     setTokenData(token);
     handleClickOpen();
   };
 
+  // Handles payment method selection
   const handleRadioChange = (e) => {
     const selectedMethod = e.target.value;
     setPaymentMethod(selectedMethod);
 
+    // If cash is selected, process the payment and show success message
     if (selectedMethod === "cash") {
       toast.success(`Payment successful via ${selectedMethod}!`);
       router.push("/");
     }
   };
 
+  // Remove an item from the cart and updates the state
   const removeItemToCartHandle = (id) => {
-    removeItemToCart(id); // Directly use removeItemToCart from the hook
-    setItemData((prev) => prev.filter((item) => item.id !== id));
+    removeItemToCart(id); // Remove item from cart custom hook
+    setItemData((prev) => prev.filter((item) => item.id !== id)); // Update local state
   };
 
+  // If there are no items in the cart, display an empty cart message
   if (itemData.length === 0) {
     return (
       <Container className="flex justify-center items-center h-screen">
@@ -72,9 +80,11 @@ const PaymentPage = () => {
       </Container>
     );
   }
-  let total = 0;
+
+  let total = 0; // Initialize total price
   return (
     <Container maxWidth="md" className="py-10">
+      {/* Page Header */}
       <Typography
         variant="h4"
         className="font-bold text-center mb-6"
@@ -99,7 +109,7 @@ const PaymentPage = () => {
         <Divider />
         <Grid container spacing={2} className="my-4">
           {itemData.map((item) => {
-            total = item.price * item.quantity + total;
+            total = item.price * item.quantity + total; // Calculate total price
             return (
               <Grid
                 item
@@ -180,16 +190,11 @@ const PaymentPage = () => {
             {/* Google Pay Button */}
             <GooglePayButtonComponent
               totalPrice={total}
-              onPaymentSuccess={() => {
-                handleClickOpen(); // Show success modal
-              }}
+              onPaymentSuccess={() => handleClickOpen()}
             />
 
             {/* Stripe Payment Button */}
-            <StripePayment
-              totalPrice={total}
-              onToken={token} // Pass the token handler to Stripe component
-            />
+            <StripePayment totalPrice={total} onToken={token} />
           </div>
         )}
       </Card>

@@ -1,12 +1,12 @@
 "use client";
 import React from "react";
-import { useDispatch } from "react-redux";
 import useCart from "@/component/hooks/useCart";
 import Link from "next/link";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import IconButton from "@mui/material/IconButton";
 
 export default function WishList() {
+  //  wishlist items and remove items from the wishlist from the custom hook
   const { wishListItems, removeItemFromWishList } = useCart();
 
   return (

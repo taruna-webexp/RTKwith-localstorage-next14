@@ -3,6 +3,7 @@ import { Checkbox } from "@mui/material";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { Controller } from "react-hook-form";
+
 const CheckBox = ({ name, checkBoxdata, control,errors }) => {
   return (
     <FormGroup className="inline-grid grid-cols-3 gap-4">
