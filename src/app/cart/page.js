@@ -1,5 +1,6 @@
 "use client";
 import { useDispatch, useSelector } from "react-redux";
+import { setCartItems } from "@/redux/cartSlice";
 import useLocalStorageState from "use-local-storage-state";
 import useCart from "@/component/hooks/useCart";
 import { Button } from "@mui/joy";
@@ -18,33 +19,29 @@ import {
 
 const Cart = () => {
   const router = useRouter();
-  const session = useSession(); //  check user authentication
-  const dispatch = useDispatch();
-
-  // Local state for storing total price and cart items in localStorage
+  const session = useSession();
+  console.log("sessionsession", session.data);
   const [totalPrices, setTotalPrice] = useLocalStorageState("totalPrices", {
     defaultValue: 0,
   });
-  const cart = useSelector((state) => state.checkout.addToCart);
 
-  // Coupon code state
   const [coupon, setCoupon] = useState("");
   const [discount, setDiscount] = useState(0);
+  const validCoupons = { SAVE10: 10, SAVE20: 20 };
 
-  // Custom hook for managing cart items
-
-  // useEffect to recalculate total price whenever the cart changes
+  const dispatch = useDispatch();
+  const cart = useSelector((state) => state.checkout.addToCart);
   useEffect(() => {
-    const totalPrice = cart.reduce(
+    // Calculate total price whenever cart changes
+    let totalPrice = cart.reduce(
       (total, item) => total + item.price * item.quantity,
       0
     );
-    setTotalPrice(totalPrice); // Update the total price in localStorage
-  }, [cart]);
+    setTotalPrice(totalPrice);
+  }, [cart, setTotalPrice]);
 
-  // Function to item remove from the cart
-  const handleRemoveItem = (item) => {
-    dispatch(removeAddCart(item)); // Update Redux store with new cart items
+  const handleRemoveItem = (id) => {
+    dispatch(removeAddCart(id));
   };
 
   // Decrement item quantity in the cart
@@ -57,41 +54,37 @@ const Cart = () => {
     dispatch(incrementToCart(item));
   };
 
-  // Coupon code for discount logic
-  const couponCode = process.env.NEXT_PUBLIC_COUPON_CODE;
+  //coupon
 
-  //  Total price for all items in the cart
-  const totalPrice = cart.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
+  const couponCode = process.env.NEXT_PUBLIC_COUPON_CODE;
+  let totalPrice = 0;
+
+  cart?.forEach((item) => {
+    totalPrice += item.price * item.quantity;
+  });
   setTotalPrice(totalPrice);
 
-  // Apply coupon logic for discount
   const handleApplyCoupon = () => {
     if (coupon) {
-      if (coupon === couponCode && totalPrices >= 100) {
-        const priceDiscount = totalPrices - 50; // Apply $50 discount if criteria met
+      if (coupon == couponCode && totalPrices >= 100) {
+        const priceDiscount = totalPrices - 30;
         setDiscount(priceDiscount);
         toast.success("Coupon added successfully");
       } else {
         toast.error("Invalid coupon code");
-        setDiscount(0); // Reset discount if invalid coupon
+        setDiscount(0);
       }
     }
   };
-
-  // Payment handler function to
   const paymentHandler = (cartItems) => {
     if (session.data === null) {
-      router.push("/auth/signin"); // Redirect to sign-in if user is not logged in
+      router.push("/auth/signin");
     } else {
       const itemData = JSON.stringify(cartItems);
-      const encodedData = encodeURIComponent(itemData); // Encode data for URL
-      router.push(`/payment?items=${encodedData}`); // Redirect to payment page
+      const encodedData = encodeURIComponent(itemData);
+      router.push(`/payment?items=${encodedData}`);
     }
   };
-
   return (
     <div className="container mx-auto p-6 bg-gray-100 min-h-screen">
       <h1 className="text-4xl font-bold text-center mb-6">
@@ -107,7 +100,6 @@ const Cart = () => {
                 key={item.id}
                 className="bg-white rounded-lg shadow-md p-4 flex flex-col md:flex-row md:items-center"
               >
-                {/* Link to product page */}
                 <Link href={`/product/${item.id}`}>
                   <img
                     src={item?.images || item?.image}
@@ -128,7 +120,6 @@ const Cart = () => {
                   </div>
                   <div className="flex items-center justify-between mt-4">
                     <div className="flex items-center">
-                      {/* Decrement quantity */}
                       <button
                         onClick={() => handleDecrement(item)}
                         className="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-1 px-2 rounded-l"
@@ -136,7 +127,6 @@ const Cart = () => {
                         -
                       </button>
                       <span className="py-1 px-3 text-lg">{item.quantity}</span>
-                      {/* Increment quantity */}
                       <button
                         onClick={() => handleIncrement(item)}
                         className="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-1 px-2 rounded-r"
@@ -144,7 +134,6 @@ const Cart = () => {
                         +
                       </button>
                     </div>
-                    {/* Remove item button */}
                     <button
                       onClick={() => handleRemoveItem(item.id)}
                       className="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-4 rounded"
@@ -157,12 +146,11 @@ const Cart = () => {
             ))}
           </div>
           <Coupon
-            handleApplyCoupon={handleApplyCoupon} // Apply coupon function
+            handleApplyCoupon={handleApplyCoupon}
             coupon={coupon}
             setCoupon={setCoupon}
           />
-          {/* Display total price and proceed to pay button */}
-          <div className="sticky bottom-0 left-0 w-full mt-2 bg-green-600 shadow-lg rounded-t-lg p-4 text-white flex justify-between items-center">
+          <div className="sticky bottom-0 left-0 w-full mt-2 bg-green-600 shadow-lg rounded-t-lg p-4 text-white flex justify-between items-center transition-transform transform hover:translate-y-[-10px]">
             <div className="flex flex-col">
               <h2 className="text-2xl font-semibold">
                 Total: $
@@ -174,9 +162,8 @@ const Cart = () => {
                 </p>
               )}
             </div>
-            {/* Payment button */}
             <Button
-              onClick={() => paymentHandler(cartItems)}
+              onClick={() => paymentHandler(cart)}
               className="px-6 py-3 bg-white text-green-600 font-semibold rounded hover:bg-gray-100"
             >
               Proceed to Pay

@@ -108,7 +108,7 @@ export default function Category({ params }) {
 
                   <p className="text-gray-700">${item.price}</p>
 
-                  <p className="text-gray-700">*{item.rating.rate}</p>
+                  <p className="text-gray-700">⭐ {item.rating.rate} </p>
 
                   <button
                     onClick={() => handleAddToCart(item)}

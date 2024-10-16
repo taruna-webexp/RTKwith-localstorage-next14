@@ -14,12 +14,14 @@ import {
 import PaymentSuccess from "@/component/modal/PaymentSuccessModal";
 import StripePayment from "@/component/common/payment/StripePayment";
 import GooglePayButtonComponent from "@/component/common/payment/GooglePayButton";
+import { useDispatch } from "react-redux";
+import { setOrderItems } from "@/redux/cartSlice";
 
 const PaymentPage = () => {
   // Custom hook for managing cart items and total price
   const { removeItemToCart, totalPrice } = useCart();
   const router = useRouter();
-
+  const dispatch = useDispatch();
   // Payment state management
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [openDialog, setOpenDialog] = useState(false);
@@ -27,13 +29,15 @@ const PaymentPage = () => {
   // URL search parameters for handling item data passed to the payment page
   const searchParams = useSearchParams();
   const [itemData, setItemData] = useState([]); // Items in the cart
+  const [orderData, setOrderData] = useState([]); // Items in the cart
 
   useEffect(() => {
     const searchParmData = searchParams.get("items"); // Get cart items from URL parameters
     if (searchParmData) {
       const decodedData = searchParmData;
       const parsedData = JSON.parse(decodedData); // Parse the item data
-      setItemData(parsedData); // Update the state with parsed cart items
+      setItemData(parsedData);
+      setOrderData(parsedData);
     }
   }, [searchParams]);
 
@@ -59,8 +63,9 @@ const PaymentPage = () => {
 
     // If cash is selected, process the payment and show success message
     if (selectedMethod === "cash") {
+      dispatch(setOrderItems(orderData));
       toast.success(`Payment successful via ${selectedMethod}!`);
-      router.push("/");
+      router.push("/order");
     }
   };
 

@@ -15,7 +15,7 @@ export const checkOutSlice = createSlice({
       );
 
       if (existingItem) {
-        toast.error("Item Removed Successfully!");
+        toast.error("Item Allready Exist in Cart!");
       } else {
         state.addToCart.push({ ...action.payload, quantity: 1 });
         toast.success("Item Added Successfully!");
@@ -25,12 +25,16 @@ export const checkOutSlice = createSlice({
     },
     removeAddCart(state, action) {
       if (action.payload) {
-        state.addToCart.filter((item) => item.id !== action.payload);
+        state.addToCart = state.addToCart.filter(
+          (item) => item.id !== action.payload
+        );
         localStorage.setItem("addToCartItems", JSON.stringify(state.addToCart));
+        toast.success("Item Removed Successfully!");
       }
     },
 
     incrementToCart(state, action) {
+      
       const item = state.addToCart.find(
         (item) => item.id === action.payload.id
       );

@@ -91,7 +91,7 @@ const Home = () => {
             <h2 className="text-lg font-semibold mb-2">{product.title}</h2>
             <p className="text-gray-600 ">${product.price}</p>
             <span className="text-sm text-gray-600 ">
-              Rating: {product.rating.rate} ({product.rating.count}
+              Rating: {product.rating.rate} ⭐ ({product.rating.count}
               reviews)
             </span>
             <Link href={`/product/${product.id}`}>
@@ -99,7 +99,6 @@ const Home = () => {
                 View Details
               </button>
             </Link>
-
             <button
               onClick={() => handleAddToCart(product)}
               className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 w-full rounded-md transition-colors duration-300"

@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 // Async thunk to fetch products
 export const fetchProducts = createAsyncThunk(
@@ -15,7 +16,7 @@ const initialState = {
   cartItems: [],
   products: [],
   category: [],
-
+  orderItem: JSON.parse(localStorage.getItem("orderListItems")) || null,
   wishList: JSON.parse(localStorage.getItem("wishListItems")) || [],
   loading: false,
   error: null,
@@ -32,6 +33,12 @@ export const cartSlice = createSlice({
     setSearchItems(state, action) {
       state.products = action.payload;
     },
+
+    setOrderItems(state, action) {
+      state.orderItem = action.payload;
+      localStorage.setItem("orderListItems", JSON.stringify(state.orderItem));
+    },
+
     setWishList(state, action) {
       const idExist = state.wishList.find(
         (item) => item.id === action.payload.id
@@ -43,6 +50,7 @@ export const cartSlice = createSlice({
         );
       } else {
         state.wishList.push(action.payload);
+        toast.success("Item Added in Wishlist Successfully!");
       }
       localStorage.setItem("wishListItems", JSON.stringify(state.wishList));
     },
@@ -70,7 +78,8 @@ export const cartSlice = createSlice({
 });
 
 // Export actions
-export const { setCartItems, setSearchItems, setWishList } = cartSlice.actions;
+export const { setCartItems, setSearchItems, setWishList, setOrderItems } =
+  cartSlice.actions;
 
 // Export reducer
 export default cartSlice.reducer;

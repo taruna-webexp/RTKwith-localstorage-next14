@@ -11,7 +11,6 @@ export default function MiddleCarousel({ productChunks }) {
       <h1 className="text-4xl font-bold mb-6">Welcome to Our Shop</h1>
       {productChunks.slice(0, 4).map((productChunk, index) => (
         <div key={index} className="w-full mb-8">
-          <h2 className="text-2xl font-semibold mb-4">Winter sale</h2>
           {/* Swiper Carousel */}
           <Swiper
             modules={[Navigation, Pagination]}
@@ -23,25 +22,29 @@ export default function MiddleCarousel({ productChunks }) {
           >
             {productChunk.map((product) => (
               <SwiperSlide key={product.id}>
-                <div className="border rounded-lg overflow-hidden shadow-lg transition-transform transform hover:scale-105">
-                  <img
-                    src={product.image}
-                    alt={product.title}
-                    className="w-full object-cover"
-                    style={{ height: "300px" }} // Set a fixed height for the images
-                  />
-                  <div className="p-4">
-                    <h2 className="text-xl font-semibold">{product.title}</h2>
-                    <p className="text-lg font-bold">
-                      ${product.price.toFixed(2)}
-                    </p>
-                    <Link href={`/product/${product.id}`}>
-                      <Button className="mt-2 inline-block bg-blue-500 text-white hover:bg-blue-600">
-                        View Details
-                      </Button>
-                    </Link>
+                <Link href={`/product/${product.id}`}>
+                  <div className="border rounded-lg overflow-hidden shadow-lg transition-transform transform hover:scale-105">
+                    <img
+                      src={product.image}
+                      alt={product.title}
+                      className="w-full object-cover"
+                      style={{ height: "300px" }} // Set a fixed height for the images
+                    />
+                    <div className="p-4">
+                      <h2 className="text-xl font-semibold">{product.title}</h2>
+                      <p className="text-gray-700">⭐ {product.rating.rate} </p>
+
+                      <p className="text-lg font-bold">
+                        ${product.price.toFixed(2)}
+                      </p>
+                      <Link href={`/product/${product.id}`}>
+                        <Button className="mt-2 inline-block bg-blue-500 text-white hover:bg-blue-600">
+                          View Details
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
-                </div>
+                </Link>
               </SwiperSlide>
             ))}
           </Swiper>

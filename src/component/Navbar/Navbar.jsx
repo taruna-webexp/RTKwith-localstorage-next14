@@ -89,7 +89,7 @@ function ResponsiveAppBar() {
               onClose={handleMenuClose}
             >
               {uniqueCategories.map((category, index) => (
-                <MenuItem key={index} onClick={handleMenuClose}>
+                <MenuItem  sx={{ textTransform: 'capitalize' }} className="capitalize " key={index} onClick={handleMenuClose}>
                   <Link href={`/categories/${category}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                     {category}
                   </Link>
