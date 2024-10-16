@@ -1,11 +1,12 @@
 "use client";
 
 import useCart from "@/component/hooks/useCart";
-import { fetchProducts } from "@/redux/cart";
+import { fetchProducts } from "@/redux/cartSlice";
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Filters from "@/component/filters/Filters";
 import { Grid } from "@mui/joy";
+import { setAddCart } from "@/redux/checkOutSlice";
 
 export default function Category({ params }) {
   const productCategory = params.slug; // Extract category from params
@@ -73,9 +74,7 @@ export default function Category({ params }) {
 
   // Function to handle adding products to cart
   const handleAddToCart = (item) => {
-    if (item) {
-      addItemToCart(item); // Add product to cart using the custom hook
-    }
+    dispatch(setAddCart(item)); // Add product to cart using the custom hook
   };
 
   return (

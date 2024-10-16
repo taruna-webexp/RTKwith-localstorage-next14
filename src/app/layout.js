@@ -8,7 +8,7 @@ import { store } from "@/store/store";
 
 import { Toaster } from "react-hot-toast";
 import Footer from "@/component/footer/Footer";
-
+        
 export default function RootLayout({ children }) {
   return (
     <html lang="en">

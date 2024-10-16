@@ -3,18 +3,14 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useCart from "@/component/hooks/useCart";
 import Link from "next/link";
-import { fetchProducts } from "@/redux/cart";
+import { fetchProducts, setWishList } from "@/redux/cartSlice";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import IconButton from "@mui/material/IconButton";
+import { setAddCart } from "@/redux/checkOutSlice";
 
 const Home = () => {
   const dispatch = useDispatch();
-  const {
-    wishListItems,
-    addItemToCart,
-    addItemToWishList,
-    removeItemFromWishList,
-  } = useCart();
+  const wishListItems = useSelector((state) => state.cart.wishList);
 
   const products = useSelector((state) => state.cart.products);
   const loading = useSelector((state) => state.cart.loading);
@@ -35,18 +31,23 @@ const Home = () => {
     return <div className="text-center mt-10">Error: {error}</div>;
   }
 
+  const handleAddToCart = (product) => {
+    dispatch(setAddCart(product));
+  };
+
   const handleWishList = (item) => {
     // Check if the item is already in the wishlist
-    const isInWishlist = wishListItems.some(
+    const isInWishlist = wishListItems?.some(
       (wishItem) => wishItem.id === item.id
     );
 
     if (isInWishlist) {
       // If the item is already in the wishlist, remove it
-      removeItemFromWishList(item.id);
+      dispatch(setWishList(item));
     } else {
       // If not, add the item to the wishlist
-      addItemToWishList(item);
+
+      dispatch(setWishList(item));
     }
   };
 
@@ -75,7 +76,7 @@ const Home = () => {
                   <IconButton onClick={() => handleWishList(product)}>
                     <FavoriteIcon
                       color={
-                        wishListItems.some(
+                        wishListItems?.some(
                           (wishItem) => wishItem.id === product.id
                         )
                           ? "error"
@@ -100,7 +101,7 @@ const Home = () => {
             </Link>
 
             <button
-              onClick={() => addItemToCart(product)}
+              onClick={() => handleAddToCart(product)}
               className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 w-full rounded-md transition-colors duration-300"
             >
               Add to Cart

@@ -1,5 +1,5 @@
 "use client";
-import { fetchProducts, setSearchItems } from "@/redux/cart";
+import { fetchProducts, setSearchItems } from "@/redux/cartSlice";
 import { Box } from "@mui/joy";
 import { IconButton } from "@mui/material";
 import React, { useState } from "react";

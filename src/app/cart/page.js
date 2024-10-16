@@ -1,6 +1,5 @@
 "use client";
-import { useDispatch } from "react-redux";
-import { setCartItems } from "../../redux/cart";
+import { useDispatch, useSelector } from "react-redux";
 import useLocalStorageState from "use-local-storage-state";
 import useCart from "@/component/hooks/useCart";
 import { Button } from "@mui/joy";
@@ -10,6 +9,12 @@ import Link from "next/link";
 import Coupon from "@/component/common/coupon/Coupon";
 import toast from "react-hot-toast";
 import { useSession } from "next-auth/react";
+import {
+  decrementToCart,
+  incrementToCart,
+  removeAddCart,
+  setAddCart,
+} from "@/redux/checkOutSlice";
 
 const Cart = () => {
   const router = useRouter();
@@ -20,17 +25,13 @@ const Cart = () => {
   const [totalPrices, setTotalPrice] = useLocalStorageState("totalPrices", {
     defaultValue: 0,
   });
-  const [cart, setCart] = useLocalStorageState("cartItems", {
-    defaultValue: [],
-  });
+  const cart = useSelector((state) => state.checkout.addToCart);
 
   // Coupon code state
   const [coupon, setCoupon] = useState("");
   const [discount, setDiscount] = useState(0);
 
   // Custom hook for managing cart items
-  const { cartItems, removeItemToCart, incrementToCart, decrementToCart } =
-    useCart();
 
   // useEffect to recalculate total price whenever the cart changes
   useEffect(() => {
@@ -42,21 +43,18 @@ const Cart = () => {
   }, [cart]);
 
   // Function to item remove from the cart
-  const handleRemoveItem = (id) => {
-    removeItemToCart(id); // Remove item via custom hook
-    dispatch(setCartItems(cartItems)); // Update Redux store with new cart items
+  const handleRemoveItem = (item) => {
+    dispatch(removeAddCart(item)); // Update Redux store with new cart items
   };
 
   // Decrement item quantity in the cart
-  const handleDecrement = (id) => {
-    decrementToCart(id); // Decrease item quantity
-    dispatch(setCartItems(cartItems)); // Sync cart with Redux store
+  const handleDecrement = (item) => {
+    dispatch(decrementToCart(item));
   };
 
   // Increment item quantity in the cart
-  const handleIncrement = (id) => {
-    incrementToCart(id); // Increase item quantity
-    dispatch(setCartItems(cartItems)); // Sync cart with Redux store
+  const handleIncrement = (item) => {
+    dispatch(incrementToCart(item));
   };
 
   // Coupon code for discount logic
@@ -88,7 +86,7 @@ const Cart = () => {
     if (session.data === null) {
       router.push("/auth/signin"); // Redirect to sign-in if user is not logged in
     } else {
-      const itemData = JSON.stringify(cartItems); // Serialize cart items
+      const itemData = JSON.stringify(cartItems);
       const encodedData = encodeURIComponent(itemData); // Encode data for URL
       router.push(`/payment?items=${encodedData}`); // Redirect to payment page
     }
@@ -132,7 +130,7 @@ const Cart = () => {
                     <div className="flex items-center">
                       {/* Decrement quantity */}
                       <button
-                        onClick={() => handleDecrement(item.id)}
+                        onClick={() => handleDecrement(item)}
                         className="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-1 px-2 rounded-l"
                       >
                         -
@@ -140,7 +138,7 @@ const Cart = () => {
                       <span className="py-1 px-3 text-lg">{item.quantity}</span>
                       {/* Increment quantity */}
                       <button
-                        onClick={() => handleIncrement(item.id)}
+                        onClick={() => handleIncrement(item)}
                         className="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-1 px-2 rounded-r"
                       >
                         +

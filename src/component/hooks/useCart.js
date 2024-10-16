@@ -1,18 +1,15 @@
 "use client";
+import { setWishList } from "@/redux/cartSlice";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
 import useLocalStorageState from "use-local-storage-state";
 
 export default function useCart() {
   const [cartItems, setCartItems] = useLocalStorageState("cartItems", {
     defaultValue: [],
   });
-  const [wishListItems, setWishListItems] = useLocalStorageState(
-    "wishListItems",
-    {
-      defaultValue: [],
-    }
-  );
+
   const [totalPrice, setTotalPrice] = useState(0);
 
   useEffect(() => {
@@ -29,33 +26,33 @@ export default function useCart() {
     if (itemExists) {
       toast.error("Item already exists in the cart");
     } else {
-      setCartItems((prevItems) => [...prevItems, { ...newItem, quantity: 1 }]);
+      // setCartItems((prevItems) => [...prevItems, { ...newItem, quantity: 1 }]);
       toast.success("Item Added Successfully!");
     }
   };
 
-  const addItemToWishList = (newItem) => {
-    const itemExists = wishListItems.some((item) => item.id === newItem.id);
+  // const addItemToWishList = (newItem) => {
+  //   const itemExists = wishListItems?.some((item) => item.id === newItem.id);
 
-    if (itemExists) {
-      toast.error("Item already exists in the Wishlist");
-    } else {
-      setWishListItems((prevItems) => [
-        ...prevItems,
-        { ...newItem, quantity: 1 },
-      ]);
-      toast.success("Item Added Successfully!");
-    }
-  };
+  //   if (itemExists) {
+  //     toast.error("Item already exists in the Wishlist");
+  //   } else {
+  //     // setWishListItems((prevItems) => [
+  //     //   ...prevItems,
+  //     //   { ...newItem, quantity: 1 },
+  //     // ]);
+  //     toast.success("Item Added Successfully!");
+  //   }
+  // };
 
   const removeItemToCart = (id) => {
     setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
     toast.success("Item removed successfully!");
   };
-  const removeItemFromWishList = (id) => {
-    setWishListItems((prevItems) => prevItems.filter((item) => item.id !== id));
-    toast.success("Item removed successfully!");
-  };
+  // const removeItemFromWishList = (id) => {
+  //   setWishListItems((prevItems) => prevItems.filter((item) => item.id !== id));
+  //   toast.success("Item removed successfully!");
+  // };
 
   const decrementToCart = (id) => {
     setCartItems((prevItems) =>
@@ -88,14 +85,12 @@ export default function useCart() {
 
   return {
     cartItems,
-    wishListItems,
+
     addItemToCart,
     totalPrice,
     removeItemToCart,
-    removeItemFromWishList,
     removeAllItems,
     incrementToCart,
-    addItemToWishList,
     decrementToCart,
   };
 }

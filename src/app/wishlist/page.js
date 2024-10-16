@@ -4,16 +4,18 @@ import useCart from "@/component/hooks/useCart";
 import Link from "next/link";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import IconButton from "@mui/material/IconButton";
+import { setWishList } from "@/redux/cartSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function WishList() {
-  //  wishlist items and remove items from the wishlist from the custom hook
-  const { wishListItems, removeItemFromWishList } = useCart();
+  const wishListItems = useSelector((state) => state.cart.wishList);
 
+  const dispatch = useDispatch();
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-3xl font-bold text-center mb-8">Your Wishlist</h1>
 
-      {wishListItems.length === 0 ? (
+      {wishListItems?.length === 0 ? (
         <div className="text-center text-gray-600">
           <p>Your wishlist is currently empty.</p>
           <Link href="/" className="text-blue-500 hover:underline">
@@ -50,7 +52,7 @@ export default function WishList() {
 
                 {/* Remove from Wishlist Button */}
                 <IconButton
-                  onClick={() => removeItemFromWishList(item.id)}
+                  onClick={() => dispatch(setWishList(item))}
                   color="error"
                 >
                   <FavoriteIcon />

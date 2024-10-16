@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { fetchProducts } from "@/redux/cart";
+import { fetchProducts } from "@/redux/cartSlice";
 import { useDispatch, useSelector } from "react-redux";
 import Feature from "@/component/pages/Feature";
 import BannerCarousel from "@/component/pages/BannerCarousel";

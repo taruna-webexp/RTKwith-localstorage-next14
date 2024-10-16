@@ -10,6 +10,7 @@ const InputField = ({
   value,
   placeholder,
 }) => {
+  
   return (
     <>
       <label htmlFor={name} className="block"></label>

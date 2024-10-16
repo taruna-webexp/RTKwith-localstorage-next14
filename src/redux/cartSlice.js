@@ -15,7 +15,8 @@ const initialState = {
   cartItems: [],
   products: [],
   category: [],
-  
+
+  wishList: JSON.parse(localStorage.getItem("wishListItems")) || [],
   loading: false,
   error: null,
 };
@@ -25,10 +26,25 @@ export const cartSlice = createSlice({
   initialState,
   reducers: {
     setCartItems(state, action) {
+      console.log("1111111111111", action);
       state.cartItems = action.payload;
     },
     setSearchItems(state, action) {
       state.products = action.payload;
+    },
+    setWishList(state, action) {
+      const idExist = state.wishList.find(
+        (item) => item.id === action.payload.id
+      );
+      console.log("ifIdExist", idExist);
+      if (idExist) {
+        state.wishList = state.wishList.filter(
+          (item) => item.id !== action.payload.id
+        );
+      } else {
+        state.wishList.push(action.payload);
+      }
+      localStorage.setItem("wishListItems", JSON.stringify(state.wishList));
     },
   },
   extraReducers: (builder) => {
@@ -40,9 +56,11 @@ export const cartSlice = createSlice({
         state.loading = false;
         state.products = action.payload.map((item) => ({
           ...item,
-          quantity: 1,
+          quantity: 1, // Add quantity property to each product
         }));
-        state.category = action.payload.map((item) => item.category);
+        state.category = [
+          ...new Set(action.payload.map((item) => item.category)),
+        ]; // Ensure unique categories
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.loading = false;
@@ -51,5 +69,8 @@ export const cartSlice = createSlice({
   },
 });
 
-export const { setCartItems, setSearchItems } = cartSlice.actions;
+// Export actions
+export const { setCartItems, setSearchItems, setWishList } = cartSlice.actions;
+
+// Export reducer
 export default cartSlice.reducer;

@@ -1,20 +1,7 @@
-// src/features/productSlice.js
-import { createSlice } from "@reduxjs/toolkit";
+import React from 'react'
 
-const initialState = {
-  items: [],
-  cart: [],
-};
-
-const productSlice = createSlice({
-  name: "cart",
-  initialState,
-  reducers: {
-    setCartItems(state, action) {
-      state.items = action.payload;
-    },
-  }
-});
-
-export const {setCartItems } = productSlice.actions;
-export default productSlice.reducer;
+export default function () {
+  return (
+    <div></div>
+  )
+}

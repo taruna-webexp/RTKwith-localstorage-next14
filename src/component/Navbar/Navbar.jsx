@@ -14,7 +14,7 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { styled } from '@mui/material/styles';
 import { Badge, Button, MenuItem } from "@mui/material";
 import CategoryIcon from '@mui/icons-material/Category';
-import { fetchProducts } from "@/redux/cart";
+import { fetchProducts } from "@/redux/cartSlice";
 import { useDispatch, useSelector } from "react-redux";
 import React, { useEffect, useState } from "react";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -36,14 +36,16 @@ function ResponsiveAppBar() {
   const pathName = usePathname();
   const { data: session } = useSession();
   const category = useSelector((state) => state.cart.category);
+  const cart = useSelector((state) => state.checkout.addToCart);
+  const cartQuantity = cart?.length;
+
 
   useEffect(() => {
     dispatch(fetchProducts());
   }, [dispatch]);
 
   const uniqueCategories = [...new Set(category)];
-  const [cart, setCart] = useLocalStorageState('cartItems');
-  const cartQuantity = cart?.length;
+  
 
   // State for the categories menu
   const [anchorEl, setAnchorEl] = useState(null);
