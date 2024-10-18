@@ -16,8 +16,14 @@ const initialState = {
   cartItems: [],
   products: [],
   category: [],
-  orderItem: JSON.parse(localStorage.getItem("orderListItems")) || null,
-  wishList: JSON.parse(localStorage.getItem("wishListItems")) || [],
+  orderItem:
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("orderListItems")) || null
+      : null,
+  wishList:
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("wishListItems")) || []
+      : [],
   loading: false,
   error: null,
 };
@@ -36,7 +42,10 @@ export const cartSlice = createSlice({
 
     setOrderItems(state, action) {
       state.orderItem = action.payload;
-      localStorage.setItem("orderListItems", JSON.stringify(state.orderItem));
+      // Check if window is defined before accessing localStorage
+      if (typeof window !== "undefined") {
+        localStorage.setItem("orderListItems", JSON.stringify(state.orderItem));
+      }
     },
 
     setWishList(state, action) {
@@ -52,7 +61,10 @@ export const cartSlice = createSlice({
         state.wishList.push(action.payload);
         toast.success("Item Added in Wishlist Successfully!");
       }
-      localStorage.setItem("wishListItems", JSON.stringify(state.wishList));
+      // Check if window is defined before accessing localStorage
+      if (typeof window !== "undefined") {
+        localStorage.setItem("wishListItems", JSON.stringify(state.wishList));
+      }
     },
   },
   extraReducers: (builder) => {

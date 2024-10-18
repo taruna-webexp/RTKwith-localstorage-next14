@@ -19,66 +19,92 @@ import { setOrderItems } from "@/redux/cartSlice";
 import { setAddCart } from "@/redux/checkOutSlice";
 
 const PaymentPage = () => {
-  // Custom hook for managing cart items and total price
   const { removeItemToCart, totalPrice } = useCart();
   const router = useRouter();
   const dispatch = useDispatch();
-  // Payment state management
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [openDialog, setOpenDialog] = useState(false);
   const [tokenData, setTokenData] = useState();
-  // URL search parameters for handling item data passed to the payment page
-  const searchParams = useSearchParams();
   const [itemData, setItemData] = useState([]); // Items in the cart
   const [orderData, setOrderData] = useState([]); // Items in the cart
 
-  useEffect(() => {
-    const searchParmData = searchParams.get("items"); // Get cart items from URL parameters
-    if (searchParmData) {
-      const decodedData = searchParmData;
-      const parsedData = JSON.parse(decodedData); // Parse the item data
-      setItemData(parsedData);
-      setOrderData(parsedData);
-    }
-  }, [searchParams]);
+  const [isClient, setIsClient] = useState(false);
 
-  // Opens the modal on successful payment
+  useEffect(() => {
+    // Ensures the component only runs on the client side
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (isClient) {
+      const searchParams = new URLSearchParams(window.location.search);
+      const searchParmData = searchParams.get("items"); // Get cart items from URL parameters
+
+      if (searchParmData) {
+        const decodedData = decodeURIComponent(searchParmData);
+        const parsedData = JSON.parse(decodedData); // Parse the item data
+        setItemData(parsedData);
+        setOrderData(parsedData);
+      }
+    }
+  }, [isClient]);
+
   const handleClickOpen = () => setOpenDialog(true);
 
-  // Closes the modal and redirects to the homepage
   const handleClose = () => {
     setOpenDialog(false);
-    router.push("/");
+    router.push("/"); // Navigate to the home page
   };
 
-  // Stores the payment token received from Stripe and opens the modal
+  const handlePaymentSuccess = () => {
+    // Show success message
+    toast.success("Payment successful!");
+
+    // Clear the cart after successful payment
+    dispatch(setOrderItems(orderData));
+    dispatch(setAddCart([])); // Clear the cart
+    localStorage.setItem("addToCartItems", JSON.stringify([]));
+
+    // Redirect to home after 3 seconds
+    setTimeout(() => {
+      router.push("/");
+    }, 3000);
+  };
+
   const token = (token) => {
     setTokenData(token);
-    handleClickOpen();
+    handlePaymentSuccess(); // Trigger the success flow
   };
 
-  // Handles payment method selection
   const handleRadioChange = (e) => {
     const selectedMethod = e.target.value;
     setPaymentMethod(selectedMethod);
 
-    // If cash is selected, process the payment and show success message
     if (selectedMethod === "cash") {
-      dispatch(setOrderItems(orderData));
-      toast.success(`Payment successful via ${selectedMethod}!`);
-      dispatch(setAddCart([]));
-      localStorage.setItem("addToCartItems", JSON.stringify([]));
-      window.location.replace("/");
+      handleCashPayment();
     }
   };
 
-  // Remove an item from the cart and updates the state
-  const removeItemToCartHandle = (id) => {
-    removeItemToCart(id); // Remove item from cart custom hook
-    setItemData((prev) => prev.filter((item) => item.id !== id)); // Update local state
+  const handleCashPayment = () => {
+    dispatch(setOrderItems(orderData));
+    toast.success("Payment successful via cash!");
+    dispatch(setAddCart([])); // Clear the cart after payment
+    localStorage.setItem("addToCartItems", JSON.stringify([]));
+    setTimeout(() => {
+      router.push("/");
+    }, 3000);
   };
 
-  // If there are no items in the cart, display an empty cart message
+  const removeItemToCartHandle = (id) => {
+    removeItemToCart(id);
+    setItemData((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const total = itemData.reduce(
+    (acc, item) => acc + item.price * item.quantity,
+    0
+  );
+
   if (itemData.length === 0) {
     return (
       <Container className="flex justify-center items-center h-screen">
@@ -89,10 +115,8 @@ const PaymentPage = () => {
     );
   }
 
-  let total = 0; // Initialize total price
   return (
     <Container maxWidth="md" className="py-10">
-      {/* Page Header */}
       <Typography
         variant="h4"
         className="font-bold text-center mb-6"
@@ -101,7 +125,6 @@ const PaymentPage = () => {
         Complete Your Purchase
       </Typography>
 
-      {/* Review Cart Section */}
       <Card
         elevation={3}
         className="mb-6"
@@ -116,46 +139,43 @@ const PaymentPage = () => {
         </Typography>
         <Divider />
         <Grid container spacing={2} className="my-4">
-          {itemData.map((item) => {
-            total = item.price * item.quantity + total; // Calculate total price
-            return (
-              <Grid
-                item
-                xs={12}
-                key={item.id}
-                className="flex justify-between items-center"
-                style={{ padding: "10px 0" }}
-              >
-                <Grid item xs={2}>
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    className="rounded"
-                    style={{ width: "100%" }}
-                  />
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="body1" style={{ fontWeight: 500 }}>
-                    {item.title} (x{item.quantity})
-                  </Typography>
-                </Grid>
-                <Grid item xs={2}>
-                  <Typography variant="body1" className="text-gray-600">
-                    ${(item.price * item.quantity).toFixed(2)}
-                  </Typography>
-                </Grid>
-                <Grid item xs={2}>
-                  <Button
-                    onClick={() => removeItemToCartHandle(item.id)}
-                    className="text-red-500"
-                    style={{ color: "#f44336", fontWeight: 500 }}
-                  >
-                    Remove
-                  </Button>
-                </Grid>
+          {itemData.map((item) => (
+            <Grid
+              item
+              xs={12}
+              key={item.id}
+              className="flex justify-between items-center"
+              style={{ padding: "10px 0" }}
+            >
+              <Grid item xs={2}>
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  className="rounded"
+                  style={{ width: "100%" }}
+                />
               </Grid>
-            );
-          })}
+              <Grid item xs={6}>
+                <Typography variant="body1" style={{ fontWeight: 500 }}>
+                  {item.title} (x{item.quantity})
+                </Typography>
+              </Grid>
+              <Grid item xs={2}>
+                <Typography variant="body1" className="text-gray-600">
+                  ${(item.price * item.quantity).toFixed(2)}
+                </Typography>
+              </Grid>
+              <Grid item xs={2}>
+                <Button
+                  onClick={() => removeItemToCartHandle(item.id)}
+                  className="text-red-500"
+                  style={{ color: "#f44336", fontWeight: 500 }}
+                >
+                  Remove
+                </Button>
+              </Grid>
+            </Grid>
+          ))}
         </Grid>
         <Divider />
         <Typography
@@ -167,7 +187,6 @@ const PaymentPage = () => {
         </Typography>
       </Card>
 
-      {/* Payment Method Section */}
       <Card
         elevation={3}
         className="mb-6"
@@ -195,19 +214,18 @@ const PaymentPage = () => {
 
         {paymentMethod === "online" && (
           <div className="text-center justify-center alignItem-center gap-4 flex">
-            {/* Google Pay Button */}
             <GooglePayButtonComponent
               totalPrice={total}
-              onPaymentSuccess={() => handleClickOpen()}
+              onPaymentSuccess={handlePaymentSuccess} // Handle Google Pay success
             />
-
-            {/* Stripe Payment Button */}
-            <StripePayment totalPrice={total} onToken={token} />
+            <StripePayment
+              totalPrice={total}
+              onToken={token} // Stripe token handling with success
+            />
           </div>
         )}
       </Card>
 
-      {/* Modal for Payment Success */}
       <PaymentSuccess
         open={openDialog}
         handleClose={handleClose}
