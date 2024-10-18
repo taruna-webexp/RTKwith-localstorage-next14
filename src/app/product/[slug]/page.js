@@ -9,7 +9,9 @@ import { setAddCart } from "@/redux/checkOutSlice";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import IconButton from "@mui/material/IconButton";
 import { setWishList } from "@/redux/cartSlice";
+
 const SingleProduct = ({ params }) => {
+                      
   const productId = params.slug;
   const dispatch = useDispatch();
   const router = useRouter();
@@ -18,6 +20,7 @@ const SingleProduct = ({ params }) => {
   const session = useSession();
   const [isMounted, setIsMounted] = useState(false);
   const wishListItems = useSelector((state) => state.cart.wishList);
+
   useEffect(() => {
     // Fetch product details based on the productId from Redux state
     if (typeof productId === "string") {
@@ -32,6 +35,7 @@ const SingleProduct = ({ params }) => {
       setIsMounted(true);
     }
   }, [productId, products]);
+
 
   const handleAddToCart = () => {
     // Add product to cart and show success message
@@ -57,6 +61,8 @@ const SingleProduct = ({ params }) => {
       dispatch(setWishList(item));
     }
   };
+
+
   const paymentHandler = (product) => {
     // Redirect to signin if not logged in, otherwise to payment page
     if (session.data === null) {

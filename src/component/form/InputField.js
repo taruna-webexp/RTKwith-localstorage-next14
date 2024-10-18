@@ -11,7 +11,6 @@ export default function FormInput({
   className,
   defaultValue,
   placeholder,
-
 }) {
   return (
     <FormControl fullWidth className={className}>
@@ -27,10 +26,9 @@ export default function FormInput({
             label={label}
             placeholder={placeholder}
             type={inputType}
-            error={!!errors[name]}
-            helperText={errors[name]?.message}
+            // error={!!errors[name]}
+            // helperText={errors[name]?.message}
             variant="outlined"
-       
           />
         )}
       />

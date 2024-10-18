@@ -42,16 +42,16 @@ export default function SearchFilter() {
         value={search}
         onChange={handleSearch}
         placeholder="Search for products, brands and more"
-        className="p-2 pl-8 rounded w-full border-none"
-        style={{ backgroundColor: "black", borderRadius: "2px" }}
+        className=" px-6 pl-8 rounded w-full border-none"
+        style={{ color: "gray", backgroundColor: "white", borderRadius: "4px" }}
       />
       <IconButton
         sx={{
-          backgroundColor: "#2874f0",
-          color: "white",
-          ml: -7,
+          backgroundColor: "2874f0",
+          color: "#2874f0",
+          ml: -6,
           zIndex: 10,
-          borderRadius: "2px",
+          borderRadius: "4px",
           p: "10px",
         }}
       >

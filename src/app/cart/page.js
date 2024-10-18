@@ -154,7 +154,7 @@ const Cart = () => {
             <div className="flex flex-col">
               <h2 className="text-2xl font-semibold">
                 Total: $
-                {discount > 0 ? discount.toFixed(2) : totalPrices.toFixed(2)}
+                {discount > 0 ? discount.toFixed(2) : totalPrices?.toFixed(2)}
               </h2>
               {discount > 0 && (
                 <p className="text-sm text-gray-200">

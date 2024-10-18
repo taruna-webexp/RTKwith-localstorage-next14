@@ -9,25 +9,25 @@ import Container from "@mui/material/Container";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { routesUrl } from "@/utils/pagesurl";
-import useLocalStorageState from "use-local-storage-state";
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import { styled } from '@mui/material/styles';
+import { useEffect, useState } from "react";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { styled } from "@mui/material/styles";
 import { Badge, Button, MenuItem } from "@mui/material";
-import CategoryIcon from '@mui/icons-material/Category';
+import CategoryIcon from "@mui/icons-material/Category";
 import { fetchProducts } from "@/redux/cartSlice";
 import { useDispatch, useSelector } from "react-redux";
-import React, { useEffect, useState } from "react";
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SearchFilter from "../common/search/SearchFilter";
 import { usePathname } from "next/navigation";
 import FavoriteIcon from "@mui/icons-material/Favorite";
+import { ListAlt, ReceiptLong, Settings } from "@mui/icons-material";
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
-  '& .MuiBadge-badge': {
+  "& .MuiBadge-badge": {
     right: -3,
     top: 13,
     border: `2px solid ${theme.palette.background.paper}`,
-    padding: '0 4px',
+    padding: "0 4px",
   },
 }));
 
@@ -39,16 +39,13 @@ function ResponsiveAppBar() {
   const cart = useSelector((state) => state.checkout.addToCart);
   const cartQuantity = cart?.length;
 
-
   useEffect(() => {
     dispatch(fetchProducts());
   }, [dispatch]);
 
   const uniqueCategories = [...new Set(category)];
-  
-
-  // State for the categories menu
   const [anchorEl, setAnchorEl] = useState(null);
+  const [userMenuAnchorEl, setUserMenuAnchorEl] = useState(null);
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -57,6 +54,16 @@ function ResponsiveAppBar() {
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
+
+  const handleUserMenuOpen = (event) => {
+    setUserMenuAnchorEl(event.currentTarget);
+  };
+
+  const handleUserMenuClose = () => {
+    setUserMenuAnchorEl(null);
+  };
+
+  const isActive = (href) => pathName === href;
 
   return (
     pathName !== "/auth/signin" && (
@@ -68,10 +75,15 @@ function ResponsiveAppBar() {
               variant="h6"
               noWrap
               component="div"
-              sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}
+              sx={{ mr: 2, display: { xs: "none", md: "flex" } }}
             >
               <Link href={routesUrl.home}>
-                <Typography color="white" variant="h5" className="font-bold cursor-pointer">Shoppy </Typography>
+                {/* Adjusted logo size */}
+                <img
+                  src="/assets/shopy.webp"
+                  alt="logo"
+                  style={{ height: "auto", width: "70px" }}
+                />
               </Link>
             </Typography>
 
@@ -89,8 +101,15 @@ function ResponsiveAppBar() {
               onClose={handleMenuClose}
             >
               {uniqueCategories.map((category, index) => (
-                <MenuItem  sx={{ textTransform: 'capitalize' }} className="capitalize " key={index} onClick={handleMenuClose}>
-                  <Link href={`/categories/${category}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <MenuItem
+                  sx={{ textTransform: "capitalize" }}
+                  key={index}
+                  onClick={handleMenuClose}
+                >
+                  <Link
+                    href={`/categories/${category}`}
+                    style={{ textDecoration: "none", color: "inherit" }}
+                  >
                     {category}
                   </Link>
                 </MenuItem>
@@ -101,50 +120,102 @@ function ResponsiveAppBar() {
             <SearchFilter />
 
             {/* Links for Home, Products */}
-            <Box sx={{ display: 'flex', flexGrow: 1, ml: 2 }}>
-              <Link href={routesUrl.home} style={{ textDecoration: 'none' }}>
-                <Button sx={{ color: "white" }}>Home</Button>
+          <div className="navbarMenuLink">
+              <Link href={routesUrl.home} style={{ textDecoration: "none" }}>
+                <Button
+                  sx={{
+                    color: isActive(routesUrl.home) ? "yellow" : "white", // Active color
+                    borderBottom: isActive(routesUrl.home)
+                      ? "2px solid yellow"
+                      : "none", // Active underline
+                  }}
+                >
+                  Home
+                </Button>
               </Link>
 
-              <Link href={routesUrl.product} style={{ textDecoration: 'none' }}>
-                <Button sx={{ color: "white", ml: 2 }}>Products</Button>
+              <Link href={routesUrl.product} style={{ textDecoration: "none" }}>
+                <Button
+                  sx={{
+                    color: isActive(routesUrl.product) ? "yellow" : "white",
+                    borderBottom: isActive(routesUrl.product)
+                      ? "2px solid yellow"
+                      : "none",
+                    ml: 2,
+                  }}
+                >
+                  Products
+                </Button>
               </Link>
 
-              <Link href="/cart" className="relative px-6">
+              <Link href="/cart">
                 <IconButton aria-label="cart">
-                  <StyledBadge badgeContent={cartQuantity} overlap="circular" color="secondary">
-                    <ShoppingCartIcon sx={{ color: "white" }} />
+                  <StyledBadge
+                    badgeContent={cartQuantity}
+                    overlap="circular"
+                    color="secondary"
+                  >
+                    <ShoppingCartIcon
+                      sx={{ color: isActive("/cart") ? "yellow" : "white" }}
+                    />
                   </StyledBadge>
                 </IconButton>
               </Link>
 
-              <Link href="/wishlist" className="relative px-6">
-                <FavoriteIcon sx={{ color: "white" }} />
-              </Link>
+             
+
               {session ? (
                 <>
-                  {/* User Section */}
-                  <Link href="/user" className="relative px-6">
-                  <Typography sx={{ mr: 2, color: "white", display: { xs: "none", md: "block" } }}>
-                    <AccountCircleIcon /> {session?.user.email || session?.user?.id}
-                  </Typography>
-                  </Link>
-                  <button
-                    onClick={signOut}
-                    className="bg-red-600 hover:bg-red-700 text-white font-bold cursor-pointer px-6 py-2 rounded-md"
+                  <IconButton
+                    color="inherit"
+                    onClick={handleUserMenuOpen}
+                    sx={{ ml: "auto" }}
                   >
-                    Sign out
-                  </button>
+                    <AccountCircleIcon />
+                  </IconButton>
+
+                  {/* User Menu Dropdown */}
+                  <Menu
+                    anchorEl={userMenuAnchorEl}
+                    open={Boolean(userMenuAnchorEl)}
+                    onClose={handleUserMenuClose}
+                  >
+                    <MenuItem onClick={handleUserMenuClose}>
+                      <ListAlt sx={{ mr: 1 }} />
+                      <Link
+                        href="/account"
+                        style={{ textDecoration: "none", color: "inherit" }}
+                      >
+                        Account
+                      </Link>
+                    </MenuItem>
+                   
+                    {/* <MenuItem onClick={handleUserMenuClose}>
+                      <Settings sx={{ mr: 1 }} />
+                      <Link
+                        href="/settings"
+                        style={{ textDecoration: "none", color: "inherit" }}
+                      >
+                        Settings
+                      </Link>
+                    </MenuItem> */}
+                    <MenuItem onClick={handleUserMenuClose}>
+                      <Button
+                      className="ps-6"
+                        onClick={signOut}
+                        sx={{ color: "blue" }}
+                      >
+                        Sign Out
+                      </Button>
+                    </MenuItem>
+                  </Menu>
                 </>
               ) : (
-                <Link href={routesUrl.signIn} style={{ textDecoration: 'none' }}>
+                <Link href={routesUrl.signIn} style={{ textDecoration: "none" }}>
                   <Typography color="white">Sign In</Typography>
                 </Link>
               )}
-            </Box>
-
-            {/* Cart and Sign In/Sign Out */}
-           
+           </div>
           </Toolbar>
         </Container>
       </AppBar>

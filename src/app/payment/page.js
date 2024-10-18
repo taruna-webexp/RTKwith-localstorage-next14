@@ -16,6 +16,7 @@ import StripePayment from "@/component/common/payment/StripePayment";
 import GooglePayButtonComponent from "@/component/common/payment/GooglePayButton";
 import { useDispatch } from "react-redux";
 import { setOrderItems } from "@/redux/cartSlice";
+import { setAddCart } from "@/redux/checkOutSlice";
 
 const PaymentPage = () => {
   // Custom hook for managing cart items and total price
@@ -65,7 +66,9 @@ const PaymentPage = () => {
     if (selectedMethod === "cash") {
       dispatch(setOrderItems(orderData));
       toast.success(`Payment successful via ${selectedMethod}!`);
-      router.push("/order");
+      dispatch(setAddCart([]));
+      localStorage.setItem("addToCartItems", JSON.stringify([]));
+      window.location.replace("/");
     }
   };
 
